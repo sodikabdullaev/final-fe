@@ -54,6 +54,14 @@ const userNavigation = [
 				</div>
 				<div class="hidden md:block">
 					<div class="ml-4 flex items-center md:ml-6">
+						<router-link
+							to="/user/login"
+							class="text-white text-sm px-2"
+							>Login </router-link
+						><span class="text-white">|</span>
+						<a href="/user/register" class="text-white text-sm px-2"
+							>Register</a
+						>
 						<button
 							type="button"
 							class="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
