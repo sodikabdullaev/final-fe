@@ -6,20 +6,24 @@
 			</h1>
 		</div>
 	</div>
-	<QuillEditor :options="options" />
+	<QuillEditor
+		:options="options"
+		v-model:content="textData"
+		content-type="html"
+	/>
 </template>
 <script>
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
-
+import axios from 'axios'
 export default {
 	components: {
 		QuillEditor,
 	},
 	data() {
 		return {
+			textData: '',
 			options: {
-				debug: 'info',
 				modules: {
 					toolbar: [
 						['bold', 'italic', 'underline', 'strike'], // toggled buttons
@@ -52,11 +56,16 @@ export default {
 			},
 		}
 	},
-
-	computed: {
-		toolbar() {
-			return // remove formatting button
+	methods: {
+		async getDocumentContent() {
+			const { data } = await axios.get(
+				'https://api.coindesk.com/v1/bpi/currentprice.json'
+			)
+			this.textData = data.disclaimer
 		},
+	},
+	mounted() {
+		this.getDocumentContent()
 	},
 }
 </script>
