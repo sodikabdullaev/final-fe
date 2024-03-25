@@ -69,7 +69,7 @@
 						class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
 						@click="handleSubmit()"
 					>
-						Sign in
+						{{ sending ? 'Logging in...' : 'Login' }}
 					</button>
 				</div>
 				<p class="text-sm">
@@ -91,11 +91,13 @@ export default {
 			username: '',
 			password: '',
 			errors: {},
+			sending: false,
 		}
 	},
 	methods: {
 		handleSubmit() {
 			event.preventDefault()
+			this.sending = true
 			if (this.validate() === 0) {
 				axios
 					.post('localhost', {
@@ -107,8 +109,10 @@ export default {
 					})
 					.catch((err) => {
 						console.log(err)
+						this.sending = false
 					})
 			}
+			this.sending = false
 		},
 		validate() {
 			this.errors = {}
