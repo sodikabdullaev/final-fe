@@ -8,29 +8,35 @@ const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
 	routes: [
 		{
-			path: '/',
-			name: 'Home',
+			path: "/",
+			name: "Home",
 			component: Home,
 		},
 		{
-			path: '/edit',
-			name: 'Edit',
-			component: () => import('../views/Edit.vue'),
+			path: "/edit",
+			name: "Edit",
+			component: () => import("../views/Edit.vue"),
 		},
 		{
-			path: '/docs',
-			name: 'Documents',
-			component: () => import('../views/Documents.vue'),
+			path: "/docs",
+			name: "Documents",
+			component: () => import("../views/Documents.vue"),
 		},
 		{
-			path: '/user',
-			name: 'user',
+			path: "/user",
+			name: "user",
 			children: [
-				{ path: 'login', component: Login },
-				{ path: 'register', component: Register },
+				{ path: "login", component: Login },
+				{ path: "register", component: Register },
 			],
 		},
+
+		{
+			path: "/new-doc",
+			name: "NewDoc",
+			component: () => import("../views/DocumentPage.vue"),
+		},
 	],
-})
+});
 
 export default router
