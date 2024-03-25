@@ -1,3 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.comment-section {
+    max-width: 25%;
+    /* position: fixed; */
+    right: 0;
+}
+
+
+.comment { 
+    border: 1px solid;
+    margin-top: 1rem;
+ }
