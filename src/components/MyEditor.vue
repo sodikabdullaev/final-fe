@@ -1,14 +1,14 @@
 <template>
   <div class="editor" v-if="editor">
     <menu-bar class="editor__header" :editor="editor" />
-    <editor-content class="editor__content" :editor="editor" />
+    <editor-content class="editor__content" :editor="editor" v-model:content="textData" ref="tipTapEditor" />
     <div class="editor__footer">
       <div :class="`editor__status editor__status--${status}`">
         <template v-if="status === 'connected'">
           {{ editor.storage.collaborationCursor.users.length }} user{{ editor.storage.collaborationCursor.users.length === 1 ? '' : 's' }} online in {{ room }}
         </template>
         <template v-else>
-          offline
+        
         </template>
       </div>
       <div class="editor__name">
@@ -17,7 +17,11 @@
         </button>
       </div>
     </div>
+    
+    <Comments v-bind:data="selected"></Comments>
   </div>
+  <CommentButton @click="showForm"></CommentButton>
+  <CommentAdder v-if="store.isFormVisible"></CommentAdder>
 </template>
 
 <script>
@@ -35,6 +39,15 @@ import * as Y from 'yjs'
 
 import { variables } from '../variables.js'
 import MenuBar from './MenuBar.vue'
+import Comments from './Comments.vue'
+import CommentButton from './CommentButton.vue'
+import CommentAdder from './CommentAdder.vue' 
+import { ref } from 'vue'
+import { store } from '../store'
+
+let isFormVisible = store.isFormVisible
+store.isFormVisible = false
+const isVisible = ref(false)
 
 const getRandomElement = list => {
   return list[Math.floor(Math.random() * list.length)]
@@ -50,6 +63,10 @@ export default {
   components: {
     EditorContent,
     MenuBar,
+    Comments,
+    CommentAdder,
+    CommentButton,
+    
   },
 
   data() {
@@ -62,6 +79,10 @@ export default {
       editor: null,
       status: 'connecting',
       room: getRandomRoom(),
+      store: store,
+      selected: {},
+      position: 0,
+      textData: ""
     }
   },
 
@@ -74,11 +95,6 @@ export default {
     name: "example-document",
     document: ydoc,
     })
-    // this.provider = new TiptapCollabProvider({
-    //   appId: '7j9y6m10',
-    //   name: this.room,
-    //   document: ydoc,
-    // })
 
     this.provider.on('status', event => {
       this.status = event.status
@@ -109,6 +125,13 @@ export default {
   },
 
   methods: {
+    showForm(){
+      console.log(store.isFormVisible)
+      store.isFormVisible = true
+    
+      console.log(store.isFormVisible)
+      
+  },
     setName() {
       const name = (window.prompt('Name') || '')
         .trim()
@@ -146,6 +169,25 @@ export default {
       ])
     },
   },
+
+  onSelectionUpdate({ editor }){
+        // const selection = new Selection()
+        isVisible.value = true
+
+        const start = editor.view.state.selection.ranges[0].$from.pos
+        const end = editor.view.state.selection.ranges[0].$to.pos
+        const selection = editor.commands.setTextSelection({from: start, to: end})
+
+        // console.log(editor.view.state.selection)
+
+        const { from = -1, to = -1 } = editor?.state.selection || {};
+      const text = editor?.state.doc.textBetween(from, to);
+      console.log(text)
+      this.selected.text = text;
+      editor?.commands.setTextSelection(to)
+  },
+
+
 
   beforeUnmount() {
     this.editor.destroy()

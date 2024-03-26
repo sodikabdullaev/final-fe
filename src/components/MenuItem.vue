@@ -3,6 +3,7 @@
     class="menu-item"
     :class="{ 'is-active': isActive ? isActive(): null }"
     @click="action"
+   
     :title="title"
   >
     <svg class="remix">
