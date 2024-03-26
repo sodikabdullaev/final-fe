@@ -47,7 +47,7 @@ import { store } from '../store'
 
 let isFormVisible = store.isFormVisible
 store.isFormVisible = false
-const isVisible = ref(false)
+const isButtonVisible = ref(false)
 
 const getRandomElement = list => {
   return list[Math.floor(Math.random() * list.length)]
@@ -168,26 +168,25 @@ export default {
         'Lea Thompson', 'Cyndi Lauper', 'Tom Cruise', 'Madonna', 'Jerry Hall', 'Joan Collins', 'Winona Ryder', 'Christina Applegate', 'Alyssa Milano', 'Molly Ringwald', 'Ally Sheedy', 'Debbie Harry', 'Olivia Newton-John', 'Elton John', 'Michael J. Fox', 'Axl Rose', 'Emilio Estevez', 'Ralph Macchio', 'Rob Lowe', 'Jennifer Grey', 'Mickey Rourke', 'John Cusack', 'Matthew Broderick', 'Justine Bateman', 'Lisa Bonet',
       ])
     },
-  },
-
-  onSelectionUpdate({ editor }){
-        // const selection = new Selection()
-        isVisible.value = true
-
-        const start = editor.view.state.selection.ranges[0].$from.pos
-        const end = editor.view.state.selection.ranges[0].$to.pos
-        const selection = editor.commands.setTextSelection({from: start, to: end})
-
-        // console.log(editor.view.state.selection)
-
+    onSelectionUpdate({ editor }){
+      console.log('hello')
+          // const selection = new Selection()
+          isButtonVisible.value = true
+          const start = editor.view.state.selection.ranges[0].$from.pos
+          const end = editor.view.state.selection.ranges[0].$to.pos
+          const selection = editor.commands.setTextSelection({from: start, to: end})
+          console.log(selection)
+  
+  
+          // console.log(editor.view.state.selection)
+  
         const { from = -1, to = -1 } = editor?.state.selection || {};
-      const text = editor?.state.doc.textBetween(from, to);
-      console.log(text)
-      this.selected.text = text;
-      editor?.commands.setTextSelection(to)
+        const text = editor?.state.doc.textBetween(from, to);
+        console.log(text)
+        this.selected.text = text;
+        // editor?.commands.setTextSelection(to)
+    }
   },
-
-
 
   beforeUnmount() {
     this.editor.destroy()
