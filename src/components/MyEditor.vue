@@ -11,6 +11,9 @@
           offline
         </template>
       </div>
+      <div class="editor__actions">
+        <button @click="getContent">SAVE</button>
+      </div>
       <div class="editor__name">
         <button @click="setName">
           {{ currentUser.name }}
@@ -119,6 +122,12 @@ export default {
           name,
         })
       }
+    },
+
+    getContent() {
+      const content = this.editor.getHTML(); // Get the content in HTML format
+      console.log(content);
+      // You can now use the content variable to do whatever you want with the editor content
     },
 
     updateCurrentUser(attributes) {
