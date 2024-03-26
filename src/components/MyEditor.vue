@@ -21,7 +21,8 @@
 </template>
 
 <script>
-import { TiptapCollabProvider } from '@hocuspocus/provider'
+// import { TiptapCollabProvider } from '@hocuspocus/provider'
+import { HocuspocusProvider } from "@hocuspocus/provider";
 import CharacterCount from '@tiptap/extension-character-count'
 import Collaboration from '@tiptap/extension-collaboration'
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor'
@@ -67,11 +68,17 @@ export default {
   mounted() {
     const ydoc = new Y.Doc()
 
-    this.provider = new TiptapCollabProvider({
-      appId: '7j9y6m10',
-      name: this.room,
-      document: ydoc,
+
+    this.provider = new HocuspocusProvider({
+    url: "ws://127.0.0.1:1234",
+    name: "example-document",
+    document: ydoc,
     })
+    // this.provider = new TiptapCollabProvider({
+    //   appId: '7j9y6m10',
+    //   name: this.room,
+    //   document: ydoc,
+    // })
 
     this.provider.on('status', event => {
       this.status = event.status
