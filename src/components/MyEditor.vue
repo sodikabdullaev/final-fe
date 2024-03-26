@@ -86,20 +86,21 @@ export default {
     }
   },
 
+  
   mounted() {
     const ydoc = new Y.Doc()
-
-
+    
+    
     this.provider = new HocuspocusProvider({
-    url: "ws://127.0.0.1:1234",
-    name: "example-document",
-    document: ydoc,
+      url: "ws://127.0.0.1:1234",
+      name: "example-document",
+      document: ydoc,
     })
-
+    
     this.provider.on('status', event => {
       this.status = event.status
     })
-
+    
     this.editor = new Editor({
       extensions: [
         StarterKit.configure({
@@ -120,9 +121,27 @@ export default {
         }),
       ],
     })
-
+    
     localStorage.setItem('currentUser', JSON.stringify(this.currentUser))
   },
+  onSelectionUpdate({ editor }){
+      console.log('hello')
+          // const selection = new Selection()
+          isButtonVisible.value = true
+          const start = editor.view.state.selection.ranges[0].$from.pos
+          const end = editor.view.state.selection.ranges[0].$to.pos
+          const selection = editor.commands.setTextSelection({from: start, to: end})
+          console.log(selection)
+  
+  
+          // console.log(editor.view.state.selection)
+  
+        const { from = -1, to = -1 } = editor?.state.selection || {};
+        const text = editor?.state.doc.textBetween(from, to);
+        console.log(text)
+        this.selected.text = text;
+        // editor?.commands.setTextSelection(to)
+    },
 
   methods: {
     showForm(){
@@ -168,24 +187,7 @@ export default {
         'Lea Thompson', 'Cyndi Lauper', 'Tom Cruise', 'Madonna', 'Jerry Hall', 'Joan Collins', 'Winona Ryder', 'Christina Applegate', 'Alyssa Milano', 'Molly Ringwald', 'Ally Sheedy', 'Debbie Harry', 'Olivia Newton-John', 'Elton John', 'Michael J. Fox', 'Axl Rose', 'Emilio Estevez', 'Ralph Macchio', 'Rob Lowe', 'Jennifer Grey', 'Mickey Rourke', 'John Cusack', 'Matthew Broderick', 'Justine Bateman', 'Lisa Bonet',
       ])
     },
-    onSelectionUpdate({ editor }){
-      console.log('hello')
-          // const selection = new Selection()
-          isButtonVisible.value = true
-          const start = editor.view.state.selection.ranges[0].$from.pos
-          const end = editor.view.state.selection.ranges[0].$to.pos
-          const selection = editor.commands.setTextSelection({from: start, to: end})
-          console.log(selection)
-  
-  
-          // console.log(editor.view.state.selection)
-  
-        const { from = -1, to = -1 } = editor?.state.selection || {};
-        const text = editor?.state.doc.textBetween(from, to);
-        console.log(text)
-        this.selected.text = text;
-        // editor?.commands.setTextSelection(to)
-    }
+   
   },
 
   beforeUnmount() {
