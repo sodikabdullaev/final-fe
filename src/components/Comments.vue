@@ -1,11 +1,9 @@
 <template>
     <div class="comment-section" ref="comment-section"  v-for="comment in comments" >
-          <CommentCard class="comment" :key="comment.id" :name="comment.id" :body="comment.body" :commentData="commentData" :data="data.text" ></CommentCard>
+          <CommentCard class="comment" :key="comment.id" :name="comment.id" :body="comment.body" :data="data.text" :position="data"></CommentCard>
     
   </div>
-  <p>{{ data }}</p>
-   
-      
+  
   </template>
   
   <script>

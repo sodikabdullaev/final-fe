@@ -1,15 +1,21 @@
 <template>
   <div class="editor" v-if="editor">
     <menu-bar class="editor__header" :editor="editor" />
-    <editor-content class="editor__content" :editor="editor" v-model:content="textData" ref="tipTapEditor" />
+    <editor-content
+      class="editor__content"
+      :editor="editor"
+      v-model:content="textData"
+      ref="tipTapEditor"
+    />
     <div class="editor__footer">
       <div :class="`editor__status editor__status--${status}`">
         <template v-if="status === 'connected'">
-          {{ editor.storage.collaborationCursor.users.length }} user{{ editor.storage.collaborationCursor.users.length === 1 ? '' : 's' }} online in {{ room }}
+          {{ editor.storage.collaborationCursor.users.length }} user{{
+            editor.storage.collaborationCursor.users.length === 1 ? "" : "s"
+          }}
+          online in {{ room }}
         </template>
-        <template v-else>
-        
-        </template>
+        <template v-else> </template>
       </div>
       <div class="editor__name">
         <button @click="setName">
@@ -17,8 +23,8 @@
         </button>
       </div>
     </div>
-    
-    <Comments v-bind:data="selected"></Comments>
+
+    <Comments :data="selected"></Comments>
   </div>
   <CommentButton @click="showForm"></CommentButton>
   <CommentAdder v-if="store.isFormVisible"></CommentAdder>
@@ -27,37 +33,37 @@
 <script>
 // import { TiptapCollabProvider } from '@hocuspocus/provider'
 import { HocuspocusProvider } from "@hocuspocus/provider";
-import CharacterCount from '@tiptap/extension-character-count'
-import Collaboration from '@tiptap/extension-collaboration'
-import CollaborationCursor from '@tiptap/extension-collaboration-cursor'
-import Highlight from '@tiptap/extension-highlight'
-import TaskItem from '@tiptap/extension-task-item'
-import TaskList from '@tiptap/extension-task-list'
-import StarterKit from '@tiptap/starter-kit'
-import { Editor, EditorContent } from '@tiptap/vue-3'
-import * as Y from 'yjs'
+import CharacterCount from "@tiptap/extension-character-count";
+import Collaboration from "@tiptap/extension-collaboration";
+import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
+import Highlight from "@tiptap/extension-highlight";
+import TaskItem from "@tiptap/extension-task-item";
+import TaskList from "@tiptap/extension-task-list";
+import StarterKit from "@tiptap/starter-kit";
+import { Editor, EditorContent } from "@tiptap/vue-3";
+import * as Y from "yjs";
 
-import { variables } from '../variables.js'
-import MenuBar from './MenuBar.vue'
-import Comments from './Comments.vue'
-import CommentButton from './CommentButton.vue'
-import CommentAdder from './CommentAdder.vue' 
-import { ref } from 'vue'
-import { store } from '../store'
+import { variables } from "../variables.js";
+import MenuBar from "./MenuBar.vue";
+import Comments from "./Comments.vue";
+import CommentButton from "./CommentButton.vue";
+import CommentAdder from "./CommentAdder.vue";
+import { ref } from "vue";
+import { store } from "../store";
 
-let isFormVisible = store.isFormVisible
-store.isFormVisible = false
-const isButtonVisible = ref(false)
+store.isFormVisible = false;
+const isButtonVisible = ref(false);
+const selected = {}
 
-const getRandomElement = list => {
-  return list[Math.floor(Math.random() * list.length)]
-}
+const getRandomElement = (list) => {
+  return list[Math.floor(Math.random() * list.length)];
+};
 
 const getRandomRoom = () => {
-  const roomNumbers = variables.collabRooms?.trim()?.split(',') ?? [10, 11, 12]
+  const roomNumbers = variables.collabRooms?.trim()?.split(",") ?? [10, 11, 12];
 
-  return getRandomElement(roomNumbers.map(number => `rooms.${number}`))
-}
+  return getRandomElement(roomNumbers.map((number) => `rooms.${number}`));
+};
 
 export default {
   components: {
@@ -66,41 +72,39 @@ export default {
     Comments,
     CommentAdder,
     CommentButton,
-    
   },
 
   data() {
     return {
-      currentUser: JSON.parse(localStorage.getItem('currentUser')) || {
+      currentUser: JSON.parse(localStorage.getItem("currentUser")) || {
         name: this.getRandomName(),
         color: this.getRandomColor(),
       },
       provider: null,
       editor: null,
-      status: 'connecting',
+      status: "connecting",
       room: getRandomRoom(),
       store: store,
-      selected: {},
+      selected: selected,
       position: 0,
-      textData: ""
-    }
+      textData: "",
+      
+    };
   },
 
-  
   mounted() {
-    const ydoc = new Y.Doc()
-    
-    
+    const ydoc = new Y.Doc();
+
     this.provider = new HocuspocusProvider({
       url: "ws://127.0.0.1:1234",
       name: "example-document",
       document: ydoc,
-    })
-    
-    this.provider.on('status', event => {
-      this.status = event.status
-    })
-    
+    });
+
+    this.provider.on("status", (event) => {
+      this.status = event.status;
+    });
+
     this.editor = new Editor({
       extensions: [
         StarterKit.configure({
@@ -120,89 +124,116 @@ export default {
           limit: 10000,
         }),
       ],
-    })
-    
-    localStorage.setItem('currentUser', JSON.stringify(this.currentUser))
-  },
-  onSelectionUpdate({ editor }){
-      console.log('hello')
-          // const selection = new Selection()
-          isButtonVisible.value = true
-          const start = editor.view.state.selection.ranges[0].$from.pos
-          const end = editor.view.state.selection.ranges[0].$to.pos
-          const selection = editor.commands.setTextSelection({from: start, to: end})
-          console.log(selection)
-  
-  
-          // console.log(editor.view.state.selection)
-  
+
+    onSelectionUpdate({ editor })  {
+        console.log("hello");
+        // const selection = new Selection()
+        isButtonVisible.value = true;
+        const start = editor.view.state.selection.ranges[0].$from.pos;
+        const end = editor.view.state.selection.ranges[0].$to.pos;
+        const selection = editor.commands.setTextSelection({
+          from: start,
+          to: end,
+        });
+
+        // console.log(editor.view.state.selection)
+
         const { from = -1, to = -1 } = editor?.state.selection || {};
         const text = editor?.state.doc.textBetween(from, to);
-        console.log(text)
-        this.selected.text = text;
+        console.log(selected)
+        selected.text = text
+        selected.start = from
+        selected.end = to
+        
         // editor?.commands.setTextSelection(to)
-    },
+      },
+    });
+
+    localStorage.setItem("currentUser", JSON.stringify(this.currentUser));
+  },
 
   methods: {
-    showForm(){
-      console.log(store.isFormVisible)
-      store.isFormVisible = true
+
     
-      console.log(store.isFormVisible)
-      
-  },
+    showForm() {
+      console.log(store.isFormVisible);
+      store.isFormVisible = true;
+
+      console.log(store.isFormVisible);
+    },
     setName() {
-      const name = (window.prompt('Name') || '')
-        .trim()
-        .substring(0, 32)
+      const name = (window.prompt("Name") || "").trim().substring(0, 32);
 
       if (name) {
         return this.updateCurrentUser({
           name,
-        })
+        });
       }
     },
 
     updateCurrentUser(attributes) {
-      this.currentUser = { ...this.currentUser, ...attributes }
-      this.editor.chain().focus().updateUser(this.currentUser).run()
+      this.currentUser = { ...this.currentUser, ...attributes };
+      this.editor.chain().focus().updateUser(this.currentUser).run();
 
-      localStorage.setItem('currentUser', JSON.stringify(this.currentUser))
+      localStorage.setItem("currentUser", JSON.stringify(this.currentUser));
     },
 
     getRandomColor() {
       return getRandomElement([
-        '#958DF1',
-        '#F98181',
-        '#FBBC88',
-        '#FAF594',
-        '#70CFF8',
-        '#94FADB',
-        '#B9F18D',
-      ])
+        "#958DF1",
+        "#F98181",
+        "#FBBC88",
+        "#FAF594",
+        "#70CFF8",
+        "#94FADB",
+        "#B9F18D",
+      ]);
     },
 
     getRandomName() {
       return getRandomElement([
-        'Lea Thompson', 'Cyndi Lauper', 'Tom Cruise', 'Madonna', 'Jerry Hall', 'Joan Collins', 'Winona Ryder', 'Christina Applegate', 'Alyssa Milano', 'Molly Ringwald', 'Ally Sheedy', 'Debbie Harry', 'Olivia Newton-John', 'Elton John', 'Michael J. Fox', 'Axl Rose', 'Emilio Estevez', 'Ralph Macchio', 'Rob Lowe', 'Jennifer Grey', 'Mickey Rourke', 'John Cusack', 'Matthew Broderick', 'Justine Bateman', 'Lisa Bonet',
-      ])
+        "Lea Thompson",
+        "Cyndi Lauper",
+        "Tom Cruise",
+        "Madonna",
+        "Jerry Hall",
+        "Joan Collins",
+        "Winona Ryder",
+        "Christina Applegate",
+        "Alyssa Milano",
+        "Molly Ringwald",
+        "Ally Sheedy",
+        "Debbie Harry",
+        "Olivia Newton-John",
+        "Elton John",
+        "Michael J. Fox",
+        "Axl Rose",
+        "Emilio Estevez",
+        "Ralph Macchio",
+        "Rob Lowe",
+        "Jennifer Grey",
+        "Mickey Rourke",
+        "John Cusack",
+        "Matthew Broderick",
+        "Justine Bateman",
+        "Lisa Bonet",
+      ]);
     },
-   
   },
 
   beforeUnmount() {
-    this.editor.destroy()
-    this.provider.destroy()
+    this.editor.destroy();
+    this.provider.destroy();
   },
-}
+};
 </script>
 
 <style lang="scss">
 .editor {
-  background-color: #FFF;
-  border: 3px solid #0D0D0D;
+  background-color: #fff;
+  border: 3px solid #0d0d0d;
   border-radius: 0.75rem;
-  color: #0D0D0D;
+  color: #0d0d0d;
   display: flex;
   flex-direction: column;
   width: 1000px;
@@ -226,15 +257,13 @@ export default {
     overflow-y: auto;
     padding: 1.25rem 1rem;
     -webkit-overflow-scrolling: touch;
-      height: 1000px;
-
-    
+    height: 1000px;
   }
 
   &__footer {
     align-items: center;
-    border-top: 3px solid #0D0D0D;
-    color: #0D0D0D;
+    border-top: 3px solid #0d0d0d;
+    color: #0d0d0d;
     display: flex;
     flex: 0 0 auto;
     flex-wrap: wrap;
@@ -251,9 +280,9 @@ export default {
     display: flex;
 
     &::before {
-      background: rgba(#0D0D0D, 0.5);
+      background: rgba(#0d0d0d, 0.5);
       border-radius: 50%;
-      content: ' ';
+      content: " ";
       display: inline-block;
       flex: 0 0 auto;
       height: 0.5rem;
@@ -266,7 +295,7 @@ export default {
     }
 
     &--connected::before {
-      background: #B9F18D;
+      background: #b9f18d;
     }
   }
 
@@ -275,23 +304,23 @@ export default {
       background: none;
       border: none;
       border-radius: 0.4rem;
-      color: #0D0D0D;
+      color: #0d0d0d;
       font: inherit;
       font-size: 12px;
       font-weight: 600;
       padding: 0.25rem 0.5rem;
 
       &:hover {
-        background-color: #0D0D0D;
-        color: #FFF;
+        background-color: #0d0d0d;
+        color: #fff;
       }
     }
   }
 }
 
 .collaboration-cursor__caret {
-  border-left: 1px solid #0D0D0D;
-  border-right: 1px solid #0D0D0D;
+  border-left: 1px solid #0d0d0d;
+  border-right: 1px solid #0d0d0d;
   margin-left: -1px;
   margin-right: -1px;
   pointer-events: none;
@@ -301,7 +330,7 @@ export default {
 
 .collaboration-cursor__label {
   border-radius: 3px 3px 3px 0;
-  color: #0D0D0D;
+  color: #0d0d0d;
   font-size: 12px;
   font-style: normal;
   font-weight: 600;
@@ -339,10 +368,10 @@ export default {
   }
 
   pre {
-    background: #0D0D0D;
+    background: #0d0d0d;
     border-radius: 0.5rem;
-    color: #FFF;
-    font-family: 'JetBrainsMono', monospace;
+    color: #fff;
+    font-family: "JetBrainsMono", monospace;
     padding: 0.75rem 1rem;
 
     code {
@@ -354,7 +383,7 @@ export default {
   }
 
   mark {
-    background-color: #FAF594;
+    background-color: #faf594;
   }
 
   img {
@@ -367,13 +396,13 @@ export default {
   }
 
   blockquote {
-    border-left: 2px solid rgba(#0D0D0D, 0.1);
+    border-left: 2px solid rgba(#0d0d0d, 0.1);
     padding-left: 1rem;
   }
 
   hr {
     border: none;
-    border-top: 2px solid rgba(#0D0D0D, 0.1);
+    border-top: 2px solid rgba(#0d0d0d, 0.1);
     margin: 2rem 0;
   }
 
