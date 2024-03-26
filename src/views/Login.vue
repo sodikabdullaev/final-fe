@@ -100,7 +100,7 @@ export default {
 			this.sending = true
 			if (this.validate() === 0) {
 				axios
-					.post('localhost', {
+					.post('http://localhost:8000/login', {
 						username: this.username,
 						password: this.password,
 					})
