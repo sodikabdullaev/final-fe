@@ -9,14 +9,14 @@
         <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" class="relative rounded-lg -top-8 -mb-4 bg-white border h-20 w-20" alt="" loading="lazy">
         <div class="flex flex-col w-full">
             <div class="flex flex-row justify-between">
-                <p class="relative text-xl whitespace-nowrap truncate overflow-hidden">USERID</p>
+                <p class="relative text-xl whitespace-nowrap truncate overflow-hidden">{{author}}</p>
                 <a class="text-gray-500 text-xl" href="#"><i class="fa-solid fa-trash"></i></a>
             </div>
-            <p class="text-gray-400 text-sm">**comment.created_at**</p>
+            <p class="text-gray-400 text-sm">{{ created_at }}</p>
         </div>
     </li>
     </div>
-    <p class="-mt-4 text-gray-500">{{body}}</p>
+    <p class="-mt-4 text-gray-500">{{content}}</p>
 </div>
 
 
@@ -32,7 +32,7 @@
 
 
 export default {
-    props: ['name', 'body', 'data', 'position']
+    props: [ 'content','position', 'created_at', 'author']
  
 }
 
