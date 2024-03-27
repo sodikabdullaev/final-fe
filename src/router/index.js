@@ -35,10 +35,10 @@ const router = createRouter({
 			path: "/document",
 			name: "document",
 			component: () => import("../views/DocumentPage.vue"),
+			props: true,
 		},
 		{
 			path: "/document/:id",
-			name: "documentById",
 			component: () => import("../views/DocumentPage.vue"),
 			props: true,
 		},
