@@ -1,23 +1,31 @@
 <template>
-    <div class="comment" >
-        <p>user-id:</p>
-        <p>comment_id: {{ name }}</p>
-        <p>Section commented on: {{ data }}</p>
-        <p>comment body: {{ body }}</p>
-        <p>position: {{ position.start }} to {{ position.end }}</p>
-        <button class="minimise"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" />
-</svg>
-</button>
-        <button class="Post">Post</button>
-        <button class="close"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-</svg>
-</button>
+
+<div class="flex justify-center relative top-1/3 comment">
+
+<!-- This is an example component -->
+<div class="relative grid grid-cols-1 gap-4 p-4 mb-8 border rounded-lg bg-white shadow-lg">
+    <div class="relative flex gap-4">
+        <li>
+        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" class="relative rounded-lg -top-8 -mb-4 bg-white border h-20 w-20" alt="" loading="lazy">
+        <div class="flex flex-col w-full">
+            <div class="flex flex-row justify-between">
+                <p class="relative text-xl whitespace-nowrap truncate overflow-hidden">USERID</p>
+                <a class="text-gray-500 text-xl" href="#"><i class="fa-solid fa-trash"></i></a>
+            </div>
+            <p class="text-gray-400 text-sm">**comment.created_at**</p>
+        </div>
+    </li>
+    </div>
+    <p class="-mt-4 text-gray-500">{{body}}</p>
+</div>
+
+
+
+</div>
         
         
 
-    </div>
+   
 </template>
 
 <script>
