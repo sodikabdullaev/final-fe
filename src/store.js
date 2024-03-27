@@ -1,5 +1,6 @@
 import { reactive } from 'vue'
 
 export const store = reactive({
-  isFormVisible : false
+  isFormVisible: false,
+  isButtonVisible: false
 })

@@ -26,11 +26,7 @@
         </button>
       </div>
     </div>
-
-    <Comments :data="selected"></Comments>
   </div>
-  <CommentButton @click="showForm"></CommentButton>
-  <CommentAdder v-if="store.isFormVisible"></CommentAdder>
 </template>
 
 <script>
@@ -51,12 +47,12 @@ import MenuBar from "./MenuBar.vue";
 import Comments from "./Comments.vue";
 import CommentButton from "./CommentButton.vue";
 import CommentAdder from "./CommentAdder.vue";
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 import { store } from "../store";
 
 store.isFormVisible = false;
-const isButtonVisible = ref(false);
-const selected = {}
+
+const selected = {};
 
 const getRandomElement = (list) => {
   return list[Math.floor(Math.random() * list.length)];
@@ -91,7 +87,6 @@ export default {
       selected: selected,
       position: 0,
       textData: "",
-      
     };
   },
 
@@ -128,10 +123,9 @@ export default {
         }),
       ],
 
-    onSelectionUpdate({ editor })  {
-        console.log("hello");
-        // const selection = new Selection()
-        isButtonVisible.value = true;
+      onSelectionUpdate({ editor }) {
+        store.isButtonVisible = true;
+
         const start = editor.view.state.selection.ranges[0].$from.pos;
         const end = editor.view.state.selection.ranges[0].$to.pos;
         const selection = editor.commands.setTextSelection({
@@ -139,15 +133,13 @@ export default {
           to: end,
         });
 
-        // console.log(editor.view.state.selection)
-
         const { from = -1, to = -1 } = editor?.state.selection || {};
         const text = editor?.state.doc.textBetween(from, to);
-        console.log(selected)
-        selected.text = text
-        selected.start = from
-        selected.end = to
-        
+
+        selected.text = text;
+        selected.start = from;
+        selected.end = to;
+
         // editor?.commands.setTextSelection(to)
       },
     });
@@ -156,14 +148,6 @@ export default {
   },
 
   methods: {
-
-    
-    showForm() {
-      console.log(store.isFormVisible);
-      store.isFormVisible = true;
-
-      console.log(store.isFormVisible);
-    },
     setName() {
       const name = (window.prompt("Name") || "").trim().substring(0, 32);
 
