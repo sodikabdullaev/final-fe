@@ -19,10 +19,19 @@ import axios from "axios";
 import { isProxy, toRaw } from "vue";
 import { store } from "../store";
 
-const document_id = 1
+
+// import { useRoute } from 'vue-router';
+
+// const route = useRoute();  
+
+// const id = $route.params.id// read parameter id (it is reactive)  
+
+// const document_id = 1
+
+
 
 export default {
-  props: ["data"],
+  props: ["data", "document_id"],
   data() {
     return {
       comments: null,
@@ -56,9 +65,13 @@ export default {
     },
   },
   mounted() {
+
+   
     axios
-      .get(`http://localhost:8000/documents/${document_id}/comments`)
+      .get(`http://localhost:8000/documents/${this.document_id}/comments`)
       .then(({ data }) => {
+        console.log(data)
+        
         this.comments = data
       
       })
