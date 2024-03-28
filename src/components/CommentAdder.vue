@@ -31,42 +31,63 @@
 
 <script>
 import axios from "axios";
+import { store } from "../store";
+import { useState } from '../compostibles/state'
+
+
+
+
+
 export default {
-  props: ["document_id"],
+  props: ["document_id", "comments"],
   data() {
     return {
       comment: "",
+      
     };
   },
   methods: {
     submit() {
       console.log(this.comment);
-      this.$emit("submit", this.comment);
-      console.log(this.comment);
+      
+      const commentToAdd = {
+        author: "testuser2",
+        content: "hello this is another comment",
+        created_at: 1711624845212,
+        document_id: "1",
+      };
+      
+      const commentsCopy = [commentToAdd, ...this.comments]
+      console.log(commentToAdd, commentsCopy)
+      console.log(this.comments)
+      this.comments.push(commentToAdd)
+      
+      this.$emit("submit-form", commentsCopy);
 
-      this.postCommentById(this.comment, this.document_id)
-      //     const commentToAdd = {author_id: (user_id),
-      //     content: this.comment,
-      //   article_id:(from article_id),
-      // created_at: Date.now()}
-      //Form comment object to post to database
-      // Structure for comment to add: {comment_id, author: (from user_id), content: this.comment, article_id:(from article_id), created_at: Date.now()}
-      //axios request to post comment to database
+      // this.comments = [commentToAdd, commentsCopy]
+      this.postCommentById(this.document_id, commentsCopy);
+      
       this.comment = "";
     },
 
-    async postCommentById(comment,document_id) {
+    async postCommentById(document_id, commentsCopy) {
       try {
         const postBody = {
-          author: 2,
+          author: "testuser2",
           content: this.comment,
           created_at: Date.now(),
-          document_id: document_id
+          document_id: document_id,
         };
         const { data } = await axios.post(
-          `http://localhost:8000/documents/${document_id}/comments`, postBody
+          `http://localhost:8000/documents/${document_id}/comments`,
+          postBody
         );
-        console.log(data)
+        console.log(data);
+        store.comments = [data, commentsCopy]
+        // this.setCommentList((currCommentList) => {
+        //   return [data,...currCommentList]
+        // })
+
       } catch (err) {
         console.log(err);
       }
