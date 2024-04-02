@@ -81,6 +81,7 @@
 
 <script>
 import axios from "axios";
+import { store } from "../store";
 export default {
   data() {
     return {
@@ -101,9 +102,8 @@ export default {
             password: this.password,
           })
           .then(({ data }) => {
-            const storedUser = localStorage.getItem("currentUser");
-            if (storedUser) localStorage.removeItem("currentUser");
             localStorage.setItem("currentUser", JSON.stringify(data[0]));
+            store.isLoggedIn = true;
             this.$router.push({ path: "/" });
           })
           .catch((err) => {
