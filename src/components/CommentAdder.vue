@@ -1,7 +1,7 @@
 <template>
   <!-- comment form -->
   <div
-    class="flex mx-auto items-center justify-center shadow-lg mt-56 mx-8 mb-4 max-w-lg"
+    class="flex mx-auto items-center justify-center shadow-lg mt-5 mx-8 mb-10 max-w-lg w-64 comment-btn "
   >
     <form class="w-full max-w-xl bg-white rounded-lg px-4 pt-2">
       <div class="flex flex-wrap -mx-3 mb-6">
@@ -9,6 +9,7 @@
         <div class="w-full md:w-full px-3 mb-2 mt-2">
           <input
             class="bg-gray-100 rounded border border-gray-400 leading-normal resize-none w-full h-20 py-2 px-3 font-medium placeholder-gray-700 focus:outline-none focus:bg-white"
+            ref="content"
             name="body"
             placeholder="Type Your Comment"
             type="text"
@@ -52,7 +53,7 @@ export default {
       
       const commentToAdd = {
         author: "testuser2",
-        content: "hello this is another comment",
+        content: this.comment,
         created_at: 1711624845212,
         document_id: "1",
       };
@@ -62,7 +63,7 @@ export default {
       console.log(this.comments)
       this.comments.push(commentToAdd)
       
-      this.$emit("submit-form", commentsCopy);
+      this.$emit("submit-form", commentToAdd);
 
       // this.comments = [commentToAdd, commentsCopy]
       this.postCommentById(this.document_id, commentsCopy);
@@ -84,9 +85,7 @@ export default {
         );
         console.log(data);
         store.comments = [data, commentsCopy]
-        // this.setCommentList((currCommentList) => {
-        //   return [data,...currCommentList]
-        // })
+  
 
       } catch (err) {
         console.log(err);
