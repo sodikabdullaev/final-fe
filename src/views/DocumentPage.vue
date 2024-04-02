@@ -1,7 +1,7 @@
 <template>
   <div class="relative md:flex h-screen overflow-hidden py-10 min-w-fit">
-    <CommentButton class="comment-btn" @click="showForm"></CommentButton>
-    <CommentAdder v-if="store.isFormVisible" :document_id="document_id"></CommentAdder>
+    <!-- <CommentButton class="comment-btn" @click="showForm"></CommentButton>
+    <CommentAdder v-if="store.isFormVisible" :document_id="document_id"></CommentAdder> -->
    
     
     <MyEditor />
