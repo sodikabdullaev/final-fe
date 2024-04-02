@@ -1,6 +1,8 @@
-import { reactive } from 'vue'
+import { reactive } from "vue";
 
 export const store = reactive({
+  isLoggedIn: false,
   isFormVisible: false,
-  isButtonVisible: false
-})
+  // isButtonVisible: false,
+  comments: [],
+});

@@ -1,19 +1,20 @@
 <template>
   <div class="relative md:flex h-screen overflow-hidden py-10 min-w-fit">
-    <!-- <CommentButton class="comment-btn" @click="showForm"></CommentButton> -->
-    <!-- <CommentAdder v-if="this.store.isFormVisible"></CommentAdder> -->
 
-    <!-- <p>{{ this.document.content}}</p> -->
      <div class="wrapper">
     <MyEditor v-if="state.document" :content="state.document.content"/>
     <h3>{{ id || 'No id passed yet' }}</h3>
   </div>
 
-    <div class="comment flex-1 p-10 h-screen overflow-y-auto min-w-fit">
-      <Comments></Comments>
+    <div
+      class="comment flex-1 p-10 h-screen overflow-y-auto min-w-fit"
+    >
+      <Comments :document_id="document_id"></Comments>
+   
+    </div> 
 
-    </div>
-  </div>
+    </div> 
+ 
 
 </template>
 
@@ -28,7 +29,7 @@ import Comments from "../components/Comments.vue";
 import CommentButton from "../components/CommentButton.vue";
 import { store } from "../store";
 import axios from 'axios';
-
+import { watch } from "vue";
 
 store.isFormVisible = false
 
@@ -42,6 +43,25 @@ const props = defineProps({
   id: {
     type: String,
     required: true
+
+
+// const route = useRoute()
+
+store.isFormVisible = false
+
+//export default {
+//  components: {
+ //   MyEditor,
+  //  Comments,
+ //   CommentButton, 
+ //   CommentAdder
+ // },
+ // data() {
+   // return {
+    //  posts: Array,
+  //    store: store,
+  //    document_id: this.$route.params.id
+  //  };
   },
   title: {
     type: String,
@@ -64,23 +84,6 @@ const state = reactive({
       console.error("Error fetching documents:", error.message);
     }
   },
-});
-  // data() {
-  //   return {
-  //     posts: Array,
-  //     store: store,
-  //     document: {},
-  //     // editorContent: null,
-
-  //   };
-  // },
-  // methods: {
-  //   showForm() {
-  //     console.log(store.isFormVisible);
-  //     store.isFormVisible = true;
-  //     console.log(store.isFormVisible);
-  //   },
-
     
 
   onMounted(async () => {
@@ -93,6 +96,10 @@ const state = reactive({
 
 // });
 
+
+
+
+};
 </script>
 
 
