@@ -1,35 +1,37 @@
 <template>
   <div class="editor" v-if="editor">
+    <!-- <h1>{{ document.title }}</h1> -->
     <menu-bar class="editor__header" :editor="editor" />
-    <editor-content
-      class="editor__content"
-      :editor="editor"
-      v-model:content="textData"
-      ref="tipTapEditor"
-    />
+    <editor-content class="editor__content" :editor="editor"/>
     <div class="editor__footer">
-      <div :class="`editor__status editor__status--${status}`">
+      <!-- <div :class="`editor__status editor__status--${status}`">
         <template v-if="status === 'connected'">
           {{ editor.storage.collaborationCursor.users.length }} user{{
-            editor.storage.collaborationCursor.users.length === 1 ? "" : "s"
+          editor.storage.collaborationCursor.users.length === 1 ? "" : "s"
           }}
           online in {{ room }}
         </template>
         <template v-else> </template>
-      </div>
+      </div> -->
       <div class="editor__actions">
         <button @click="getContent">SAVE</button>
       </div>
       <div class="editor__name">
         <button @click="setName">
-          {{ currentUser.name }}
+          <!-- {{ currentUser.name }} -->
         </button>
       </div>
     </div>
   </div>
 </template>
+<script setup>
+import { ref, onMounted, onBeforeUnmount, onUnmounted, defineProps, reactive } from "vue";
+import Document from "@tiptap/extension-document";
+import Paragraph from "@tiptap/extension-paragraph";
+import Text from "@tiptap/extension-text";
 
-<script>
+import { useRoute } from "vue-router";
+
 // import { TiptapCollabProvider } from '@hocuspocus/provider'
 import { HocuspocusProvider } from "@hocuspocus/provider";
 import CharacterCount from "@tiptap/extension-character-count";
@@ -41,186 +43,212 @@ import TaskList from "@tiptap/extension-task-list";
 import StarterKit from "@tiptap/starter-kit";
 import { Editor, EditorContent } from "@tiptap/vue-3";
 import * as Y from "yjs";
-
 import { variables } from "../variables.js";
 import MenuBar from "./MenuBar.vue";
 import Comments from "./Comments.vue";
 import CommentButton from "./CommentButton.vue";
 import CommentAdder from "./CommentAdder.vue";
-import { ref, reactive } from "vue";
 import { store } from "../store";
-
+import axios from 'axios';
 store.isFormVisible = false;
-
 const selected = {};
-
 const getRandomElement = (list) => {
   return list[Math.floor(Math.random() * list.length)];
 };
-
 const getRandomRoom = () => {
   const roomNumbers = variables.collabRooms?.trim()?.split(",") ?? [10, 11, 12];
-
   return getRandomElement(roomNumbers.map((number) => `rooms.${number}`));
 };
 
-export default {
-  components: {
-    EditorContent,
-    MenuBar,
-    Comments,
-    CommentAdder,
-    CommentButton,
-  },
+ 
+const editor = ref(null);
 
-  data() {
-    return {
-      currentUser: JSON.parse(localStorage.getItem("currentUser")) || {
-        name: this.getRandomName(),
-        color: this.getRandomColor(),
-      },
-      provider: null,
-      editor: null,
-      status: "connecting",
-      room: getRandomRoom(),
-      store: store,
-      selected: selected,
-      position: 0,
-      textData: "",
-    };
-  },
+const props = defineProps({
+  content: {
+    type: String,
+    required: true
+  }
+});
 
-  mounted() {
-    const ydoc = new Y.Doc();
+  // data() {
+  //   return {
+  //     currentUser: JSON.parse(localStorage.getItem("currentUser")) || {
+  //       name: this.getRandomName(),
+  //       color: this.getRandomColor(),
+  //     },
+  //     provider: null,
+  //     editor: null,
+  //     status: "connecting",
+  //     room: getRandomRoom(),
+  //     store: store,
+  //     selected: selected,
+  //     position: 0,
+  //     content: "",
+  //   };
+  // },
+  
+const ydoc = new Y.Doc();
+const provider = new HocuspocusProvider({
+  url: "ws://127.0.0.1:1234",
+  // name: "example-document",
+  document: ydoc,
+});
 
-    this.provider = new HocuspocusProvider({
-      url: "ws://127.0.0.1:1234",
-      name: "example-document",
-      document: ydoc,
-    });
+onMounted(() => {
+  createEditor();
+});
 
-    this.provider.on("status", (event) => {
-      this.status = event.status;
-    });
+const createEditor = () => {
+  editor.value = new Editor({
+    extensions: [
+      Document,
+      Paragraph,
+      Text,
+      Collaboration.configure({
+        document: ydoc,
+      }),
+      CollaborationCursor.configure({
+        provider,
+        user: { name: "John Doe", color: "#ffcc00" },
+      }),
+    ],
+    content: props.content,
 
-    this.editor = new Editor({
-      extensions: [
-        StarterKit.configure({
-          history: false,
-        }),
-        Highlight,
-        TaskList,
-        TaskItem,
-        Collaboration.configure({
-          document: ydoc,
-        }),
-        CollaborationCursor.configure({
-          provider: this.provider,
-          user: this.currentUser,
-        }),
-        CharacterCount.configure({
-          limit: 10000,
-        }),
-      ],
+  });
 
-      onSelectionUpdate({ editor }) {
-        store.isButtonVisible = true;
-
-        const start = editor.view.state.selection.ranges[0].$from.pos;
-        const end = editor.view.state.selection.ranges[0].$to.pos;
-        const selection = editor.commands.setTextSelection({
-          from: start,
-          to: end,
-        });
-
-        const { from = -1, to = -1 } = editor?.state.selection || {};
-        const text = editor?.state.doc.textBetween(from, to);
-
-        selected.text = text;
-        selected.start = from;
-        selected.end = to;
-
-        // editor?.commands.setTextSelection(to)
-      },
-    });
-
-    localStorage.setItem("currentUser", JSON.stringify(this.currentUser));
-  },
-
-  methods: {
-    setName() {
-      const name = (window.prompt("Name") || "").trim().substring(0, 32);
-
-      if (name) {
-        return this.updateCurrentUser({
-          name,
-        });
-      }
-    },
-
-    getContent() {
-      const content = this.editor.getHTML(); // Get the content in HTML format
-      console.log(content);
-      // You can now use the content variable to do whatever you want with the editor content
-    },
-
-    updateCurrentUser(attributes) {
-      this.currentUser = { ...this.currentUser, ...attributes };
-      this.editor.chain().focus().updateUser(this.currentUser).run();
-
-      localStorage.setItem("currentUser", JSON.stringify(this.currentUser));
-    },
-
-    getRandomColor() {
-      return getRandomElement([
-        "#958DF1",
-        "#F98181",
-        "#FBBC88",
-        "#FAF594",
-        "#70CFF8",
-        "#94FADB",
-        "#B9F18D",
-      ]);
-    },
-
-    getRandomName() {
-      return getRandomElement([
-        "Lea Thompson",
-        "Cyndi Lauper",
-        "Tom Cruise",
-        "Madonna",
-        "Jerry Hall",
-        "Joan Collins",
-        "Winona Ryder",
-        "Christina Applegate",
-        "Alyssa Milano",
-        "Molly Ringwald",
-        "Ally Sheedy",
-        "Debbie Harry",
-        "Olivia Newton-John",
-        "Elton John",
-        "Michael J. Fox",
-        "Axl Rose",
-        "Emilio Estevez",
-        "Ralph Macchio",
-        "Rob Lowe",
-        "Jennifer Grey",
-        "Mickey Rourke",
-        "John Cusack",
-        "Matthew Broderick",
-        "Justine Bateman",
-        "Lisa Bonet",
-      ]);
-    },
-  },
-
-  beforeUnmount() {
-    this.editor.destroy();
-    this.provider.destroy();
-  },
 };
-</script>
 
+console.log(editor.value, "<<< editor")
+
+onUnmounted(() => {
+  editor.value.commands.setContent({ type: 'doc', content: [] });
+  editor.value.destroy();
+  // provider.destroy();
+
+
+});
+
+
+
+//   mounted() {
+//     const ydoc = new Y.Doc();
+//     this.provider = new HocuspocusProvider({
+//       url: "ws://127.0.0.1:1234",
+//       name: "example-document",
+//       document: ydoc,
+//     });
+//     this.provider.on("status", (event) => {
+//       this.status = event.status;
+//     });
+//     this.editor = new Editor({
+    
+//           content: "",
+
+//       extensions: [
+//         StarterKit.configure({
+//           history: false,
+//         }),
+//         Highlight,
+//         TaskList,
+//         TaskItem,
+//         Collaboration.configure({
+//           document: ydoc,
+//         }),
+//         CollaborationCursor.configure({
+//           provider: this.provider,
+//           user: this.currentUser,
+//         }),
+//         CharacterCount.configure({
+//           limit: 10000,
+//         }),
+//       ],
+     
+//       onSelectionUpdate({ editor }) {
+//         store.isButtonVisible = true;
+//         const start = editor.view.state.selection.ranges[0].$from.pos;
+//         const end = editor.view.state.selection.ranges[0].$to.pos;
+//         const selection = editor.commands.setTextSelection({
+//           from: start,
+//           to: end,
+//         });
+//         const { from = -1, to = -1 } = editor?.state.selection || {};
+//         const text = editor?.state.doc.textBetween(from, to);
+//         selected.text = text;
+//         selected.start = from;
+//         selected.end = to;
+//       }
+//   });
+
+//   localStorage.setItem("currentUser", JSON.stringify(this.currentUser));
+ 
+// },
+// methods: {
+//   setName() {
+//     const name = (window.prompt("Name") || "").trim().substring(0, 32);
+//     if (name) {
+//       return this.updateCurrentUser({
+//         name,
+//       });
+//     }
+//   },
+  
+//   getContent() {
+//     const content = this.editor.getHTML();
+//     console.log(content);
+//   },
+ 
+//   updateCurrentUser(attributes) {
+//     this.currentUser = { ...this.currentUser, ...attributes };
+//     this.editor.chain().focus().updateUser(this.currentUser).run();
+//     localStorage.setItem("currentUser", JSON.stringify(this.currentUser));
+//   },
+//   getRandomColor() {
+//     return getRandomElement([
+//       "#958DF1",
+//       "#F98181",
+//       "#FBBC88",
+//       "#FAF594",
+//       "#70CFF8",
+//       "#94FADB",
+//       "#B9F18D",
+//     ]);
+//   },
+//   getRandomName() {
+//     return getRandomElement([
+//       "Lea Thompson",
+//       "Cyndi Lauper",
+//       "Tom Cruise",
+//       "Madonna",
+//       "Jerry Hall",
+//       "Joan Collins",
+//       "Winona Ryder",
+//       "Christina Applegate",
+//       "Alyssa Milano",
+//       "Molly Ringwald",
+//       "Ally Sheedy",
+//       "Debbie Harry",
+//       "Olivia Newton-John",
+//       "Elton John",
+//       "Michael J. Fox",
+//       "Axl Rose",
+//       "Emilio Estevez",
+//       "Ralph Macchio",
+//       "Rob Lowe",
+//       "Jennifer Grey",
+//       "Mickey Rourke",
+//       "John Cusack",
+//       "Matthew Broderick",
+//       "Justine Bateman",
+//       "Lisa Bonet",
+//     ]);
+//   },
+// },
+// beforeUnmount() {
+//   this.editor.destroy();
+//   this.provider.destroy();
+// },
+  
+</script>
 <style lang="scss">
 .editor {
   background-color: #fff;
@@ -337,7 +365,7 @@ export default {
 }
 
 .tiptap {
-  > * + * {
+  >*+* {
     margin-top: 0.75em;
   }
 
@@ -407,13 +435,13 @@ export default {
       align-items: center;
       display: flex;
 
-      > label {
+      >label {
         flex: 0 0 auto;
         margin-right: 0.5rem;
         user-select: none;
       }
 
-      > div {
+      >div {
         flex: 1 1 auto;
       }
     }

@@ -1,52 +1,99 @@
 <template>
   <div class="relative md:flex h-screen overflow-hidden py-10 min-w-fit">
-    <CommentButton class="comment-btn" @click="showForm"></CommentButton>
-    <CommentAdder v-if="store.isFormVisible"></CommentAdder>
-   
-    
-    <MyEditor />
+    <!-- <CommentButton class="comment-btn" @click="showForm"></CommentButton> -->
+    <!-- <CommentAdder v-if="this.store.isFormVisible"></CommentAdder> -->
 
-   
-    <div
-      class="comment flex-1 p-10 h-screen overflow-y-auto min-w-fit"
-    >
+    <!-- <p>{{ this.document.content}}</p> -->
+     <div class="wrapper">
+    <MyEditor v-if="state.document" :content="state.document.content"/>
+    <h3>{{ id || 'No id passed yet' }}</h3>
+  </div>
+
+    <div class="comment flex-1 p-10 h-screen overflow-y-auto min-w-fit">
       <Comments></Comments>
-   
-    </div> 
-    </div> 
- 
+
+    </div>
+  </div>
+
 </template>
 
-<script>
+<script setup>
+import { onMounted, onUnmounted } from "vue";
+import { ref } from "vue";
+import { useRoute } from "vue-router";
+import { reactive } from "vue";
 import MyEditor from "../components/MyEditor.vue";
 import CommentAdder from "../components/CommentAdder.vue";
 import Comments from "../components/Comments.vue";
 import CommentButton from "../components/CommentButton.vue";
 import { store } from "../store";
+import axios from 'axios';
+
 
 store.isFormVisible = false
 
-export default {
-  components: {
-    MyEditor,
-    Comments,
-    CommentButton, 
-    CommentAdder
-  },
-  data() {
-    return {
-      posts: Array,
-      store: store
-    };
-  },
-  methods: {
-    showForm() {
-      console.log(store.isFormVisible);
-      store.isFormVisible = true;
-      // state.isButtonVisible = false;
+const route = useRoute()
+console.log(route)
+console.log(route.params.id)
+const docId = route.params.id
 
-      console.log(store.isFormVisible);
-    },
+
+const props = defineProps({
+  id: {
+    type: String,
+    required: true
   },
-};
+  title: {
+    type: String,
+  }
+});
+
+const state = reactive({
+  document: null,
+  setDocument: async () => {
+    try {
+      const response = await fetch(`http://localhost:8000/documents/${docId}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch document");
+      }
+      const data = await response.json();
+      state.document = data;
+      console.log(state.document, "<<<state.doc")
+      console.log(data.content, "<<<state.content")
+    } catch (error) {
+      console.error("Error fetching documents:", error.message);
+    }
+  },
+});
+  // data() {
+  //   return {
+  //     posts: Array,
+  //     store: store,
+  //     document: {},
+  //     // editorContent: null,
+
+  //   };
+  // },
+  // methods: {
+  //   showForm() {
+  //     console.log(store.isFormVisible);
+  //     store.isFormVisible = true;
+  //     console.log(store.isFormVisible);
+  //   },
+
+    
+
+  onMounted(async () => {
+  await state.setDocument();
+  console.log(state.document.content, "<<doc mount")
+});
+// onUnmounted(() => {
+//   editor.value.commands.setContent({ type: 'ydoc', content: [] });
+//     editor.value.destroy();
+
+// });
+
 </script>
+
+
+
