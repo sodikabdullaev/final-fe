@@ -84,6 +84,7 @@ import { useRouter } from "vue-router";
 import { v4 as uuidv4 } from "uuid";
 import DocumentPage from "./DocumentPage.vue";
 import { timeAgo } from "../compostibles/functions";
+import axios from 'axios'
 
 const documents = ref([]);
 const router = useRouter();
@@ -100,19 +101,38 @@ onMounted(async () => {
     console.error("Error fetching documents:", error.message);
   }
 });
-
-const createNewDocument = () => {
+async function createNewDocument() {
+  const newDocTitle = prompt("Enter document name")
+  if (!newDocTitle) {
+    console.log("Document must have a title");
+    return
+  }
   const newDocument = {
-    id: uuidv4(),
-    title: "New Document",
+    // id: uuidv4(),
+    title: newDocTitle,
     content: "",
-    created_at: new Date().toISOString(),
+    author_id: 1,
+    author: "Edgar Burke",
+    created_at: Date.now(),
   };
+// console.log(newDocument)
+try {
+  const response = await axios.post(
+      "http://127.0.0.1:8000/documents",
+    newDocument
+    )
+    console.log(response)
+  if (response.status === 201) {
+    
   documents.value.push(newDocument);
   router.push({
     name: "DocumentPage",
     params: { id: newDocument.id },
     query: { isNewDocument: "true" },
   });
+   }
+  } catch (error) {
+    console.error("Error creating new document:", error.message);
+  }
 };
 </script>
