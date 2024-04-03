@@ -1,4 +1,5 @@
 <template>
+
 	<div class="border-b">
 		<div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
 			<h1 class="text-3xl font-bold tracking-tight text-gray-900">
@@ -45,7 +46,7 @@
 									<img class="inline-block h-8 w-8 rounded-full ring-2 ring-white"
 										src="https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
 										alt="" />
-									John doe
+									{{ document.author }}
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
 									<img class="inline-block h-8 w-8 rounded-full ring-2 ring-white"
@@ -74,8 +75,8 @@
 			</div>
 		</div>
 	</div>
-</template>
 
+</template>
 
 <script setup>
 import { ref, onMounted } from "vue";
@@ -87,37 +88,31 @@ import { timeAgo } from "../compostibles/functions";
 const documents = ref([]);
 const router = useRouter();
 
-
-
-
 onMounted(async () => {
-	try {
-		const response = await fetch("http://127.0.0.1:8000/documents");
-		if (!response.ok) {
-			throw new Error("Failed to fetch documents");
-		}
-		const data = await response.json();
-		documents.value = data;
-	} catch (error) {
-		console.error("Error fetching documents:", error.message);
-	}
+  try {
+    const response = await fetch("http://127.0.0.1:8000/documents");
+    if (!response.ok) {
+      throw new Error("Failed to fetch documents");
+    }
+    const data = await response.json();
+    documents.value = data;
+  } catch (error) {
+    console.error("Error fetching documents:", error.message);
+  }
 });
 
-
-
 const createNewDocument = () => {
-	const newDocument = {
-		id: uuidv4(),
-		title: "New Document",
-		content: "",
-		created_at: new Date().toISOString()
-	};
-	documents.value.push(newDocument);
-  router.push({ name: 'DocumentPage', params: { id: newDocument.id }, query: { isNewDocument: 'true' } });
+  const newDocument = {
+    id: uuidv4(),
+    title: "New Document",
+    content: "",
+    created_at: new Date().toISOString(),
+  };
+  documents.value.push(newDocument);
+  router.push({
+    name: "DocumentPage",
+    params: { id: newDocument.id },
+    query: { isNewDocument: "true" },
+  });
 };
-
-
-
-
-
 </script>

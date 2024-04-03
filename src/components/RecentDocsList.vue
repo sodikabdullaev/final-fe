@@ -1,3 +1,4 @@
+
 <template >
 
 <div  class="w-full max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 dark:bg-gray-800 dark:border-gray-700 content-center justify-self-center" >
@@ -31,7 +32,17 @@ import { ref } from 'vue';
     //         .catch((err) => err);
 
 
+axios
+  .get(`http://localhost:8000/documents`)
+  .then(({ data }) => {
+    recentDocs.value = data;
+    return recentDocs;
+  })
+  .catch((err) => err);
+
+
  export default {
+
     data() {
         return {
             recentDocs: store.recentDocs
@@ -75,3 +86,4 @@ import { ref } from 'vue';
 
 
 </script>
+

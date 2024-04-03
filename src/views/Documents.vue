@@ -68,7 +68,7 @@
                         src="https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                         alt=""
                       />
-                      John doe
+                      {{ document.author }}
                     </td>
                     <td
                       class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200"
@@ -129,6 +129,7 @@ export default {
       const res = await axios.get(`http://localhost:8000/documents`);
       console.log(res.data);
       this.documents = res.data;
+      this.user = localStorage.getItem("currentUser");
       console.log(this.documents);
     },
   },
