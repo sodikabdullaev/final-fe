@@ -2,7 +2,7 @@
   <CommentButton class="comment-btn" @click="toggleForm"></CommentButton>
   <CommentAdder
     v-if="isFormVisible"
-    :document_id="document_id"
+    :id="id"
     :comments="comments"
     @submit-form="receiveEmit"
     class = "z-100"
@@ -68,7 +68,7 @@ const isFormVisible = ref(false);
 const tempCommentVisible = ref(false);
 
 export default {
-  props: ["data", "document_id"],
+  props: ["data", "id"],
   data() {
     return {
       comments: comments,
@@ -114,7 +114,7 @@ export default {
     console.log("comments are mounted");
     console.log(comments.value);
     axios
-      .get(`http://localhost:8000/documents/${this.document_id}/comments`)
+      .get(`http://localhost:8000/documents/${this.id}/comments`)
       .then(({ data }) => {
         console.log(data);
         comments.value = data;

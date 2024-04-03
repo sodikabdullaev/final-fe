@@ -34,10 +34,12 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr v-for="document in documents" :key="document.id" @click="navigateToDocumentPage(document)"
+							<tr v-for="document in documents" :key="document.id"
 								class="odd:bg-white even:bg-gray-100 dark:odd:bg-slate-900 dark:even:bg-slate-800 cursor-pointer">
 								<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
-									<button>{{ document.title }}</button>
+									<router-link :to="{ name: 'DocumentPage', params: { id: document.id }, query: { isNewDocument: 'false' } }">
+									{{ document.title }}
+									</router-link>
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
 									<img class="inline-block h-8 w-8 rounded-full ring-2 ring-white"
@@ -100,6 +102,8 @@ onMounted(async () => {
 	}
 });
 
+
+
 const createNewDocument = () => {
 	const newDocument = {
 		id: uuidv4(),
@@ -107,17 +111,12 @@ const createNewDocument = () => {
 		content: "",
 		created_at: new Date().toISOString()
 	};
-	// Push the new document to the documents array
 	documents.value.push(newDocument);
-	// Update router link with the new document ID
-	router.push({ name: 'DocumentPage', params: { id: newDocument.id } });
+  router.push({ name: 'DocumentPage', params: { id: newDocument.id }, query: { isNewDocument: 'true' } });
 };
 
-// console.log(documents)
 
 
-function navigateToDocumentPage(document) {
-	router.push({ name: 'DocumentPage', params: { id: document.id } });
-		}
+
 
 </script>

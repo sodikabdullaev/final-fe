@@ -3,7 +3,7 @@ import { reactive } from "vue";
 export const store = reactive({
   isLoggedIn: false,
   isFormVisible: false,
-  // isButtonVisible: false,
+  documentExists: false,
   comments: [],
   recentDocs: []
 });

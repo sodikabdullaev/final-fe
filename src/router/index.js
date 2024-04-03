@@ -37,8 +37,14 @@ const router = createRouter({
 			props: true,
 		},
 		{
-			path: "/document/:id",
+			path: "/document/:id?",
 			name: "DocumentPage",
+			component: DocumentPage,
+			props: true,
+		},
+		{
+			path: "/document/:newId?",
+			name: "newDocumentPage",
 			component: DocumentPage,
 			props: true,
 		},

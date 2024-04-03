@@ -40,7 +40,7 @@ import { useState } from '../compostibles/state'
 
 
 export default {
-  props: ["document_id", "comments"],
+  props: ["id", "comments"],
   data() {
     return {
       comment: "",
@@ -55,7 +55,7 @@ export default {
         author: "testuser2",
         content: this.comment,
         created_at: 1711624845212,
-        document_id: "1",
+        document_id: "id",
       };
       
       const commentsCopy = [commentToAdd, ...this.comments]
@@ -66,21 +66,21 @@ export default {
       this.$emit("submit-form", commentToAdd);
 
       // this.comments = [commentToAdd, commentsCopy]
-      this.postCommentById(this.document_id, commentsCopy);
+      this.postCommentById(this.id, commentsCopy);
       
       this.comment = "";
     },
 
-    async postCommentById(document_id, commentsCopy) {
+    async postCommentById(id, commentsCopy) {
       try {
         const postBody = {
           author: "testuser2",
           content: this.comment,
           created_at: Date.now(),
-          document_id: document_id,
+          id: id,
         };
         const { data } = await axios.post(
-          `http://localhost:8000/documents/${document_id}/comments`,
+          `http://localhost:8000/documents/${id}/comments`,
           postBody
         );
         console.log(data);
