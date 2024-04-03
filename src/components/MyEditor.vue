@@ -14,7 +14,7 @@
         <template v-else> </template>
       </div>
       <div class="editor__actions">
-        <button @click="getContent">SAVE</button>
+        <button @click="handleSave()">SAVE</button>
       </div>
       <div class="editor__name">
         <button @click="setName">
@@ -85,6 +85,9 @@ const props = defineProps({
    title: {
     type: String,
     required: true
+  },
+  id: {
+    type: Number
   }
 });
 
@@ -124,8 +127,18 @@ const createEditor = () => {
 localStorage.setItem("currentUser", JSON.stringify(currentUser.value));
     }
 
-console.log(editor.value, "<<< editor")
 
+
+const getContent = () => {
+   const content = editor.value.getHTML();
+  //  console.log(content);
+   return content
+ }
+
+const setContent = () => {
+  const content = this.editor.getHTML();
+  console.log(content);
+ }
 
 const updateCurrentUser = (attributes) => {
       currentUser.value = { ...currentUser.value, ...attributes };
@@ -133,7 +146,30 @@ const updateCurrentUser = (attributes) => {
       localStorage.setItem("currentUser", JSON.stringify(currentUser.value));
 };
 
+const handleSave = () => {
+  const content = getContent()
+  console.log(content)
+  patchArticleById(props.id, content)
 
+}
+
+ async function patchArticleById (id,content) {
+      try {
+        const patchBody = {
+          id: id,
+          content: content
+        };
+        const { data } = await axios.patch(
+          `http://localhost:8000/documents/${id}`,
+          patchBody
+        );
+        console.log(data, "in axios")
+  
+
+      } catch (err) {
+        console.log(err);
+      }
+    }
 
 const setName = () => {
       const name = (window.prompt("Name") || "").trim().substring(0, 32);
@@ -143,6 +179,7 @@ const setName = () => {
         });
       }
     };
+
 
     const getRandomColor = () => {
       return getRandomElement([
@@ -191,6 +228,8 @@ onUnmounted(() => {
   editor.value.commands.setContent({ type: 'doc', content: [] });
   editor.value.destroy();
   // provider.destroy();
+
+
 
 
 });
