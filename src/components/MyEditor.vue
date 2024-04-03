@@ -4,15 +4,15 @@
     <menu-bar class="editor__header" :editor="editor" />
     <editor-content class="editor__content" :editor="editor"/>
     <div class="editor__footer">
-      <!-- <div :class="`editor__status editor__status--${status}`">
+      <div :class="`editor__status editor__status--${status}`">
         <template v-if="status === 'connected'">
           {{ editor.storage.collaborationCursor.users.length }} user{{
           editor.storage.collaborationCursor.users.length === 1 ? "" : "s"
           }}
-          online in {{ room }}
+          online in {{ title }}
         </template>
         <template v-else> </template>
-      </div> -->
+      </div>
       <div class="editor__actions">
         <button @click="getContent">SAVE</button>
       </div>
@@ -24,8 +24,12 @@
     </div>
   </div>
 </template>
+
+
+
+
 <script setup>
-import { ref, onMounted, onBeforeUnmount, onUnmounted, defineProps, reactive } from "vue";
+import { ref, onMounted, onBeforeUnmount, onUnmounted, reactive } from "vue";
 import Document from "@tiptap/extension-document";
 import Paragraph from "@tiptap/extension-paragraph";
 import Text from "@tiptap/extension-text";
@@ -51,7 +55,7 @@ import CommentAdder from "./CommentAdder.vue";
 import { store } from "../store";
 import axios from 'axios';
 store.isFormVisible = false;
-const selected = {};
+// const selected = {};
 const getRandomElement = (list) => {
   return list[Math.floor(Math.random() * list.length)];
 };
@@ -60,6 +64,16 @@ const getRandomRoom = () => {
   return getRandomElement(roomNumbers.map((number) => `rooms.${number}`));
 };
 
+const currentUser = ref(JSON.parse(localStorage.getItem("currentUser")) || {
+      name: getRandomName(),
+      color: getRandomColor(),
+    });
+    // let provider = null;
+    // let editor = null;
+    const status = ref("connecting");
+    const room = ref(null); // Initialize room as a ref
+    const selected = ref({ text: '', start: 0, end: 0 });
+    
  
 const editor = ref(null);
 
@@ -67,25 +81,14 @@ const props = defineProps({
   content: {
     type: String,
     required: true
+  },
+   title: {
+    type: String,
+    required: true
   }
 });
 
-  // data() {
-  //   return {
-  //     currentUser: JSON.parse(localStorage.getItem("currentUser")) || {
-  //       name: this.getRandomName(),
-  //       color: this.getRandomColor(),
-  //     },
-  //     provider: null,
-  //     editor: null,
-  //     status: "connecting",
-  //     room: getRandomRoom(),
-  //     store: store,
-  //     selected: selected,
-  //     position: 0,
-  //     content: "",
-  //   };
-  // },
+
   
 const ydoc = new Y.Doc();
 const provider = new HocuspocusProvider({
@@ -93,6 +96,9 @@ const provider = new HocuspocusProvider({
   // name: "example-document",
   document: ydoc,
 });
+provider.on("status", (event) => {
+  status.value = event.status
+})
 
 onMounted(() => {
   createEditor();
@@ -109,16 +115,77 @@ const createEditor = () => {
       }),
       CollaborationCursor.configure({
         provider,
-        user: { name: "John Doe", color: "#ffcc00" },
+        user: currentUser.value,
       }),
     ],
     content: props.content,
 
   });
-
-};
+localStorage.setItem("currentUser", JSON.stringify(currentUser.value));
+    }
 
 console.log(editor.value, "<<< editor")
+
+
+const updateCurrentUser = (attributes) => {
+      currentUser.value = { ...currentUser.value, ...attributes };
+      editor.chain().focus().updateUser(currentUser.value).run();
+      localStorage.setItem("currentUser", JSON.stringify(currentUser.value));
+};
+
+
+
+const setName = () => {
+      const name = (window.prompt("Name") || "").trim().substring(0, 32);
+      if (name) {
+        updateCurrentUser({
+          name,
+        });
+      }
+    };
+
+    const getRandomColor = () => {
+      return getRandomElement([
+        "#958DF1",
+        "#F98181",
+        "#FBBC88",
+        "#FAF594",
+        "#70CFF8",
+        "#94FADB",
+        "#B9F18D",
+      ]);
+    };
+
+    const getRandomName = () => {
+      return getRandomElement([
+        "Lea Thompson",
+        "Cyndi Lauper",
+        "Tom Cruise",
+        "Madonna",
+        "Jerry Hall",
+        "Joan Collins",
+        "Winona Ryder",
+        "Christina Applegate",
+        "Alyssa Milano",
+        "Molly Ringwald",
+        "Ally Sheedy",
+        "Debbie Harry",
+        "Olivia Newton-John",
+        "Elton John",
+        "Michael J. Fox",
+        "Axl Rose",
+        "Emilio Estevez",
+        "Ralph Macchio",
+        "Rob Lowe",
+        "Jennifer Grey",
+        "Mickey Rourke",
+        "John Cusack",
+        "Matthew Broderick",
+        "Justine Bateman",
+        "Lisa Bonet",
+      ]);
+    };
+
 
 onUnmounted(() => {
   editor.value.commands.setContent({ type: 'doc', content: [] });
@@ -129,124 +196,6 @@ onUnmounted(() => {
 });
 
 
-
-//   mounted() {
-//     const ydoc = new Y.Doc();
-//     this.provider = new HocuspocusProvider({
-//       url: "ws://127.0.0.1:1234",
-//       name: "example-document",
-//       document: ydoc,
-//     });
-//     this.provider.on("status", (event) => {
-//       this.status = event.status;
-//     });
-//     this.editor = new Editor({
-    
-//           content: "",
-
-//       extensions: [
-//         StarterKit.configure({
-//           history: false,
-//         }),
-//         Highlight,
-//         TaskList,
-//         TaskItem,
-//         Collaboration.configure({
-//           document: ydoc,
-//         }),
-//         CollaborationCursor.configure({
-//           provider: this.provider,
-//           user: this.currentUser,
-//         }),
-//         CharacterCount.configure({
-//           limit: 10000,
-//         }),
-//       ],
-     
-//       onSelectionUpdate({ editor }) {
-//         store.isButtonVisible = true;
-//         const start = editor.view.state.selection.ranges[0].$from.pos;
-//         const end = editor.view.state.selection.ranges[0].$to.pos;
-//         const selection = editor.commands.setTextSelection({
-//           from: start,
-//           to: end,
-//         });
-//         const { from = -1, to = -1 } = editor?.state.selection || {};
-//         const text = editor?.state.doc.textBetween(from, to);
-//         selected.text = text;
-//         selected.start = from;
-//         selected.end = to;
-//       }
-//   });
-
-//   localStorage.setItem("currentUser", JSON.stringify(this.currentUser));
- 
-// },
-// methods: {
-//   setName() {
-//     const name = (window.prompt("Name") || "").trim().substring(0, 32);
-//     if (name) {
-//       return this.updateCurrentUser({
-//         name,
-//       });
-//     }
-//   },
-  
-//   getContent() {
-//     const content = this.editor.getHTML();
-//     console.log(content);
-//   },
- 
-//   updateCurrentUser(attributes) {
-//     this.currentUser = { ...this.currentUser, ...attributes };
-//     this.editor.chain().focus().updateUser(this.currentUser).run();
-//     localStorage.setItem("currentUser", JSON.stringify(this.currentUser));
-//   },
-//   getRandomColor() {
-//     return getRandomElement([
-//       "#958DF1",
-//       "#F98181",
-//       "#FBBC88",
-//       "#FAF594",
-//       "#70CFF8",
-//       "#94FADB",
-//       "#B9F18D",
-//     ]);
-//   },
-//   getRandomName() {
-//     return getRandomElement([
-//       "Lea Thompson",
-//       "Cyndi Lauper",
-//       "Tom Cruise",
-//       "Madonna",
-//       "Jerry Hall",
-//       "Joan Collins",
-//       "Winona Ryder",
-//       "Christina Applegate",
-//       "Alyssa Milano",
-//       "Molly Ringwald",
-//       "Ally Sheedy",
-//       "Debbie Harry",
-//       "Olivia Newton-John",
-//       "Elton John",
-//       "Michael J. Fox",
-//       "Axl Rose",
-//       "Emilio Estevez",
-//       "Ralph Macchio",
-//       "Rob Lowe",
-//       "Jennifer Grey",
-//       "Mickey Rourke",
-//       "John Cusack",
-//       "Matthew Broderick",
-//       "Justine Bateman",
-//       "Lisa Bonet",
-//     ]);
-//   },
-// },
-// beforeUnmount() {
-//   this.editor.destroy();
-//   this.provider.destroy();
-// },
   
 </script>
 <style lang="scss">
