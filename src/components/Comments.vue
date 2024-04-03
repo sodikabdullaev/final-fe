@@ -61,14 +61,15 @@ import axios from "axios";
 import { store } from "../store";
 import { useState } from "../compostibles/state";
 import { ref } from "vue";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/vue/24/outline";
+import { ArrowRightStartOnRectangleIcon, ArrowTopRightOnSquareIcon } from "@heroicons/vue/24/outline";
+import { timeAgo } from "../compostibles/functions";
 
 const comments = ref({});
 const isFormVisible = ref(false);
 const tempCommentVisible = ref(false);
 
 export default {
-  props: ["data", "id"],
+  props: ["data", "id", "isNewDocument"],
   data() {
     return {
       comments: comments,
@@ -99,18 +100,23 @@ export default {
     },
 
     async getAllComments() {
+      console.log(this.isNewDocument)
+      if(!this.isNewDocument){
       console.log("hello in all comments");
       try {
         const { data } = await axios.get(
-          "http://localhost:8000/documents/1/comments "
+          `http://localhost:8000/documents/${this.id}/comments `
         );
         store.comments = data;
       } catch (err) {
         console.log(err);
       }
+    }
     },
   },
   mounted() {
+    if (!this.isNewDocument){
+      console.log(this.isNewDocument)
     console.log("comments are mounted");
     console.log(comments.value);
     axios
@@ -121,13 +127,19 @@ export default {
         console.log(comments.value);
       })
       .catch((err) => console.log(err));
+    }
+    else{
+      comments.value = []
+    }
   },
 
   watch: {
     comments: {
       handler() {
-        this.getAllComments();
-        isFormVisible.value = false;
+        if(!this.isNewDocument){
+          this.getAllComments();
+          isFormVisible.value = false;
+        }
       },
       immediate: true,
     },

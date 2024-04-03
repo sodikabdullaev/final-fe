@@ -3,16 +3,16 @@
 
      <div class="wrapper">
     <MyEditor v-if="state.document" :content="state.document.content" :title="state.document.title"/>
-        <h2>{{ isNewDocument ? 'New Document' : 'Existing Document' }}</h2>
+        <!-- <h2>{{ isNewDocument ? 'New Document' : 'Existing Document' }}</h2> -->
 
     
-    <h3>{{ id || 'No id passed yet' }}</h3>
+    <!-- <h3>{{ id || 'No id passed yet' }}</h3> -->
     <!-- <h4>{{ title || 'no title'}}</h4> -->
   </div>
     <div
       class="comment flex-1 p-10 h-screen overflow-y-auto min-w-fit"
     >
-      <Comments :id="id"></Comments>
+      <Comments :id="id" :isNewDocument="isNewDocument"></Comments>
     </div> 
     </div> 
   

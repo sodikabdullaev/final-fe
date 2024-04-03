@@ -12,7 +12,7 @@
                 <p class="relative text-xl whitespace-nowrap truncate overflow-hidden">{{author}}</p>
                 <a class="text-gray-500 text-xl" href="#"><i class="fa-solid fa-trash"></i></a>
             </div>
-            <p class="text-gray-400 text-sm">{{ created_at }}</p>
+            <p class="text-gray-400 text-sm">{{ timeAgoString }} </p>
         </div>
     </li>
     </div>
@@ -29,10 +29,25 @@
 </template>
 
 <script>
+import { timeAgo } from '../compostibles/functions';
 
+
+// const documentDate = this.created_at
+// const date = new Date(documentDate);
+// const timeAgoString = timeAgo(date);
 
 export default {
-    props: [ 'content','position', 'created_at', 'author']
+    props: [ 'content','position', 'created_at', 'author'],
+    data (){
+
+        return{ 
+            documentDate: this.created_at,
+            date: new Date(this.documentDate),
+            timeAgoString: timeAgo(this.date)
+    }
+
+    }
+
  
 }
 

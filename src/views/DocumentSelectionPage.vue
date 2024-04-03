@@ -26,7 +26,7 @@
 									Team
 								</th>
 								<th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">
-									Created at
+									Created
 								</th>
 								<th scope="col" class="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase">
 									Action
@@ -59,7 +59,7 @@
 										alt="" />
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
-									{{ document.created_at }}
+									{{ timeAgo(new Date (document.created_at)) }}
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
 									<button type="button"
@@ -82,6 +82,7 @@ import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { v4 as uuidv4 } from "uuid";
 import DocumentPage from "./DocumentPage.vue";
+import { timeAgo } from "../compostibles/functions";
 
 const documents = ref([]);
 const router = useRouter();
