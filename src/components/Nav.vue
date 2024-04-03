@@ -34,7 +34,12 @@ const logout = () => {
   store.isLoggedIn = false;
 };
 // console.log(isLoggedIn);
+
+const navigation = router.options.routes.filter(route => {
+  return route.name === 'Home' || route.name === 'DocumentSelectionPage';
+});
 </script>
+
 <template>
   <Disclosure as="nav" class="bg-gray-800" v-slot="{ open }">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -50,7 +55,7 @@ const logout = () => {
           <div class="hidden md:block">
             <div class="ml-10 flex items-baseline space-x-4">
               <router-link
-                v-for="(route, index) in router.options.routes"
+                v-for="(route, index) in navigation"
                 :key="route.name"
                 :to="route.path"
                 :active-class="'bg-gray-900 text-white'"
