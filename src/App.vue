@@ -7,11 +7,11 @@ store.isLoggedIn = localStorage.getItem("currentUser") !== null;
 </script>
 
 <template>
-  <div class="min-h-full">
+  <div class="min-h-screen">
     <Nav />
 
     <main>
-      <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 min-h-screen">
         <RouterView />
       </div>
     </main>
