@@ -2,12 +2,12 @@
   <div class="editor" v-if="editor">
     <!-- <h1>{{ document.title }}</h1> -->
     <menu-bar class="editor__header" :editor="editor" />
-    <editor-content class="editor__content" :editor="editor"/>
+    <editor-content class="editor__content" :editor="editor" />
     <div class="editor__footer">
       <div :class="`editor__status editor__status--${status}`">
         <template v-if="status === 'connected'">
           {{ editor.storage.collaborationCursor.users.length }} user{{
-          editor.storage.collaborationCursor.users.length === 1 ? "" : "s"
+            editor.storage.collaborationCursor.users.length === 1 ? "" : "s"
           }}
           online in {{ title }}
         </template>
@@ -24,9 +24,6 @@
     </div>
   </div>
 </template>
-
-
-
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, onUnmounted, reactive } from "vue";
@@ -53,9 +50,51 @@ import Comments from "./Comments.vue";
 import CommentButton from "./CommentButton.vue";
 import CommentAdder from "./CommentAdder.vue";
 import { store } from "../store";
-import axios from 'axios';
+import axios from "axios";
 store.isFormVisible = false;
 // const selected = {};
+
+const getRandomName = () => {
+  return getRandomElement([
+    "Lea Thompson",
+    "Cyndi Lauper",
+    "Tom Cruise",
+    "Madonna",
+    "Jerry Hall",
+    "Joan Collins",
+    "Winona Ryder",
+    "Christina Applegate",
+    "Alyssa Milano",
+    "Molly Ringwald",
+    "Ally Sheedy",
+    "Debbie Harry",
+    "Elton John",
+    "Michael J. Fox",
+    "Axl Rose",
+    "Emilio Estevez",
+    "Ralph Macchio",
+    "Rob Lowe",
+    "Jennifer Grey",
+    "Mickey Rourke",
+    "John Cusack",
+    "Matthew Broderick",
+    "Justine Bateman",
+    "Lisa Bonet",
+  ]);
+};
+
+const getRandomColor = () => {
+  return getRandomElement([
+    "#958DF1",
+    "#F98181",
+    "#FBBC88",
+    "#FAF594",
+    "#70CFF8",
+    "#94FADB",
+    "#B9F18D",
+  ]);
+};
+
 const getRandomElement = (list) => {
   return list[Math.floor(Math.random() * list.length)];
 };
@@ -64,35 +103,36 @@ const getRandomRoom = () => {
   return getRandomElement(roomNumbers.map((number) => `rooms.${number}`));
 };
 
-const currentUser = ref(JSON.parse(localStorage.getItem("currentUser")) || {
-      name: getRandomName(),
-      color: getRandomColor(),
-    });
-    // let provider = null;
-    // let editor = null;
-    const status = ref("connecting");
-    const room = ref(null); // Initialize room as a ref
-    const selected = ref({ text: '', start: 0, end: 0 });
-    
- 
+const currentUser = ref({
+  name:
+    JSON.parse(localStorage.getItem("currentUser")).username || getRandomName(),
+  color: getRandomColor(),
+});
+console.log("HERE", currentUser.value);
+// let provider = null;
+// let editor = null;
+const status = ref("connecting");
+const room = ref(null); // Initialize room as a ref
+const selected = ref({ text: "", start: 0, end: 0 });
+
 const editor = ref(null);
 
 const props = defineProps({
   content: {
     type: String,
-    required: true
+    required: true,
   },
-   title: {
+  title: {
     type: String,
+
     required: true
   },
   id: {
     type: Number
   }
+
 });
 
-
-  
 const ydoc = new Y.Doc();
 const provider = new HocuspocusProvider({
   url: "ws://127.0.0.1:1234",
@@ -100,8 +140,8 @@ const provider = new HocuspocusProvider({
   document: ydoc,
 });
 provider.on("status", (event) => {
-  status.value = event.status
-})
+  status.value = event.status;
+});
 
 onMounted(() => {
   createEditor();
@@ -122,12 +162,13 @@ const createEditor = () => {
       }),
     ],
     content: props.content,
-
   });
-localStorage.setItem("currentUser", JSON.stringify(currentUser.value));
-    }
+
+  // localStorage.setItem("currentUser", JSON.stringify(currentUser.value));
+};
 
 
+console.log(editor.value, "<<< editor");
 
 const getContent = () => {
    const content = editor.value.getHTML();
@@ -141,10 +182,11 @@ const setContent = () => {
  }
 
 const updateCurrentUser = (attributes) => {
-      currentUser.value = { ...currentUser.value, ...attributes };
-      editor.chain().focus().updateUser(currentUser.value).run();
-      localStorage.setItem("currentUser", JSON.stringify(currentUser.value));
+  currentUser.value = { ...currentUser.value, ...attributes };
+  editor.chain().focus().updateUser(currentUser.value).run();
+  // localStorage.setItem("currentUser", JSON.stringify(currentUser.value));
 };
+
 
 const handleSave = () => {
   const content = getContent()
@@ -224,18 +266,23 @@ const setName = () => {
     };
 
 
+const setName = () => {
+  const name = (window.prompt("Name") || "").trim().substring(0, 32);
+  if (name) {
+    updateCurrentUser({
+      name,
+    });
+  }
+};
+
+
 onUnmounted(() => {
-  editor.value.commands.setContent({ type: 'doc', content: [] });
+  editor.value.commands.setContent({ type: "doc", content: [] });
   editor.value.destroy();
   // provider.destroy();
 
-
-
-
 });
 
-
-  
 </script>
 <style lang="scss">
 .editor {
@@ -353,7 +400,7 @@ onUnmounted(() => {
 }
 
 .tiptap {
-  >*+* {
+  > * + * {
     margin-top: 0.75em;
   }
 
@@ -423,13 +470,13 @@ onUnmounted(() => {
       align-items: center;
       display: flex;
 
-      >label {
+      > label {
         flex: 0 0 auto;
         margin-right: 0.5rem;
         user-select: none;
       }
 
-      >div {
+      > div {
         flex: 1 1 auto;
       }
     }
