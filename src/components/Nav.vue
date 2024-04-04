@@ -41,7 +41,7 @@ const logout = () => {
 // console.log(isLoggedIn);
 
 const navigation = router.options.routes.filter((route) => {
-  return route.name === "Home" || route.name === "DocumentSelectionPage";
+  return route.name === "Home" || route.name === "Documents";
 });
 </script>
 

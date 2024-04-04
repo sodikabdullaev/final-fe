@@ -19,7 +19,7 @@ const router = createRouter({
 		},
 		{
 			path: "/documents",
-			name: "DocumentSelectionPage",
+			name: "Documents",
 			component: DocumentSelectionPage,
 		},
 		{
