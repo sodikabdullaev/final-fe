@@ -14,7 +14,7 @@
         <template v-else> </template>
       </div>
       <div class="editor__actions">
-        <button @click="getContent">SAVE</button>
+        <button @click="handleSave()">SAVE</button>
       </div>
       <div class="editor__name">
         <button @click="setName">
@@ -124,8 +124,13 @@ const props = defineProps({
   },
   title: {
     type: String,
-    required: true,
+
+    required: true
   },
+  id: {
+    type: Number
+  }
+
 });
 
 const ydoc = new Y.Doc();
@@ -158,16 +163,108 @@ const createEditor = () => {
     ],
     content: props.content,
   });
+
   // localStorage.setItem("currentUser", JSON.stringify(currentUser.value));
 };
 
+
 console.log(editor.value, "<<< editor");
+
+const getContent = () => {
+   const content = editor.value.getHTML();
+  //  console.log(content);
+   return content
+ }
+
+const setContent = () => {
+  const content = this.editor.getHTML();
+  console.log(content);
+ }
 
 const updateCurrentUser = (attributes) => {
   currentUser.value = { ...currentUser.value, ...attributes };
   editor.chain().focus().updateUser(currentUser.value).run();
   // localStorage.setItem("currentUser", JSON.stringify(currentUser.value));
 };
+
+
+const handleSave = () => {
+  const content = getContent()
+  console.log(content)
+  patchArticleById(props.id, content)
+
+}
+
+ async function patchArticleById (id,content) {
+      try {
+        const patchBody = {
+          id: id,
+          content: content
+        };
+        const { data } = await axios.patch(
+          `http://localhost:8000/documents/${id}`,
+          patchBody
+        );
+        console.log(data, "in axios")
+  
+
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+const setName = () => {
+      const name = (window.prompt("Name") || "").trim().substring(0, 32);
+      if (name) {
+        updateCurrentUser({
+          name,
+        });
+      }
+    };
+
+
+    const getRandomColor = () => {
+      return getRandomElement([
+        "#958DF1",
+        "#F98181",
+        "#FBBC88",
+        "#FAF594",
+        "#70CFF8",
+        "#94FADB",
+        "#B9F18D",
+      ]);
+    };
+
+    const getRandomName = () => {
+      return getRandomElement([
+        "Lea Thompson",
+        "Cyndi Lauper",
+        "Tom Cruise",
+        "Madonna",
+        "Jerry Hall",
+        "Joan Collins",
+        "Winona Ryder",
+        "Christina Applegate",
+        "Alyssa Milano",
+        "Molly Ringwald",
+        "Ally Sheedy",
+        "Debbie Harry",
+        "Olivia Newton-John",
+        "Elton John",
+        "Michael J. Fox",
+        "Axl Rose",
+        "Emilio Estevez",
+        "Ralph Macchio",
+        "Rob Lowe",
+        "Jennifer Grey",
+        "Mickey Rourke",
+        "John Cusack",
+        "Matthew Broderick",
+        "Justine Bateman",
+        "Lisa Bonet",
+      ]);
+    };
+
 
 const setName = () => {
   const name = (window.prompt("Name") || "").trim().substring(0, 32);
@@ -178,11 +275,14 @@ const setName = () => {
   }
 };
 
+
 onUnmounted(() => {
   editor.value.commands.setContent({ type: "doc", content: [] });
   editor.value.destroy();
   // provider.destroy();
+
 });
+
 </script>
 <style lang="scss">
 .editor {

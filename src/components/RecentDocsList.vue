@@ -1,7 +1,7 @@
 
 <template >
 
-<div  class="w-full max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 dark:bg-gray-800 dark:border-gray-700 content-center justify-self-center" >
+<div  class=" w-full max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 dark:bg-gray-800 dark:border-gray-700 content-center justify-self-center" >
 <h5 class="mb-3 text-base font-semibold text-gray-900 md:text-xl dark:text-white">
 Recent Documents
 </h5>

@@ -2,7 +2,7 @@
   <div class="relative md:flex h-screen overflow-hidden py-10 min-w-fit">
 
      <div class="wrapper">
-    <MyEditor v-if="state.document" :content="state.document.content" :title="state.document.title"/>
+    <MyEditor v-if="state.document" :content="state.document.content" :title="state.document.title" :id="id"/>
         <!-- <h2>{{ isNewDocument ? 'New Document' : 'Existing Document' }}</h2> -->
 
     
