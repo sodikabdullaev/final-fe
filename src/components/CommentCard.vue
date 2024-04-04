@@ -6,7 +6,7 @@
 <div class="relative grid grid-cols-1 gap-4 p-4 mb-8 border rounded-lg bg-white shadow-lg w-64">
     <div class="relative flex gap-4">
         <li>
-        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" class="relative rounded-lg -top-8 -mb-4 bg-white border h-20 w-20" alt="" loading="lazy">
+        <img :src="avatar_url" class="relative rounded-lg -top-8 -mb-4 bg-white border h-20 w-20" alt="" loading="lazy">
         <div class="flex flex-col w-full">
             <div class="flex flex-row justify-between">
                 <p class="relative text-xl whitespace-nowrap truncate overflow-hidden">{{author}}</p>
@@ -37,7 +37,7 @@ import { timeAgo } from '../compostibles/functions';
 // const timeAgoString = timeAgo(date);
 
 export default {
-    props: [ 'content','position', 'created_at', 'author'],
+    props: [ 'content','position', 'created_at', 'author', 'avatar_url'],
     data (){
 
         return{ 
