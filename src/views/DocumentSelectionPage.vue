@@ -74,7 +74,7 @@
                 >
                   <img
                     class="inline-block h-8 w-8 rounded-full ring-2 ring-white"
-                    :src="avatar"
+                    :src="document.avatar_url"
                     alt=""
                   />
                   {{ document.author }}
