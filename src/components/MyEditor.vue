@@ -1,6 +1,5 @@
 <template>
   <div class="editor" v-if="editor">
-    <!-- <h1>{{ document.title }}</h1> -->
     <menu-bar class="editor__header" :editor="editor" />
     <editor-content class="editor__content" :editor="editor" />
     <div class="editor__footer">
@@ -17,71 +16,27 @@
         <button @click="handleSave()">SAVE</button>
       </div>
       <div class="editor__name">
-        <button @click="setName">
-          <!-- {{ currentUser.name }} -->
-        </button>
+        <button @click="setName"></button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, onUnmounted, reactive } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import Document from "@tiptap/extension-document";
 import Paragraph from "@tiptap/extension-paragraph";
 import Text from "@tiptap/extension-text";
 
-import { useRoute } from "vue-router";
-
-// import { TiptapCollabProvider } from '@hocuspocus/provider'
 import { HocuspocusProvider } from "@hocuspocus/provider";
-import CharacterCount from "@tiptap/extension-character-count";
 import Collaboration from "@tiptap/extension-collaboration";
 import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
-import Highlight from "@tiptap/extension-highlight";
-import TaskItem from "@tiptap/extension-task-item";
-import TaskList from "@tiptap/extension-task-list";
-import StarterKit from "@tiptap/starter-kit";
 import { Editor, EditorContent } from "@tiptap/vue-3";
 import * as Y from "yjs";
-import { variables } from "../variables.js";
 import MenuBar from "./MenuBar.vue";
-import Comments from "./Comments.vue";
-import CommentButton from "./CommentButton.vue";
-import CommentAdder from "./CommentAdder.vue";
 import { store } from "../store";
 import axios from "axios";
 store.isFormVisible = false;
-// const selected = {};
-
-const getRandomName = () => {
-  return getRandomElement([
-    "Lea Thompson",
-    "Cyndi Lauper",
-    "Tom Cruise",
-    "Madonna",
-    "Jerry Hall",
-    "Joan Collins",
-    "Winona Ryder",
-    "Christina Applegate",
-    "Alyssa Milano",
-    "Molly Ringwald",
-    "Ally Sheedy",
-    "Debbie Harry",
-    "Elton John",
-    "Michael J. Fox",
-    "Axl Rose",
-    "Emilio Estevez",
-    "Ralph Macchio",
-    "Rob Lowe",
-    "Jennifer Grey",
-    "Mickey Rourke",
-    "John Cusack",
-    "Matthew Broderick",
-    "Justine Bateman",
-    "Lisa Bonet",
-  ]);
-};
 
 const getRandomColor = () => {
   return getRandomElement([
@@ -98,22 +53,13 @@ const getRandomColor = () => {
 const getRandomElement = (list) => {
   return list[Math.floor(Math.random() * list.length)];
 };
-const getRandomRoom = () => {
-  const roomNumbers = variables.collabRooms?.trim()?.split(",") ?? [10, 11, 12];
-  return getRandomElement(roomNumbers.map((number) => `rooms.${number}`));
-};
 
 const currentUser = ref({
-  name:
-    JSON.parse(localStorage.getItem("currentUser")).username || getRandomName(),
+  name: JSON.parse(localStorage.getItem("currentUser")).username || "Guest",
   color: getRandomColor(),
 });
-console.log("HERE", currentUser.value);
-// let provider = null;
-// let editor = null;
+
 const status = ref("connecting");
-const room = ref(null); // Initialize room as a ref
-const selected = ref({ text: "", start: 0, end: 0 });
 
 const editor = ref(null);
 
@@ -125,12 +71,11 @@ const props = defineProps({
   title: {
     type: String,
 
-    required: true
+    required: true,
   },
   id: {
-    type: Number
-  }
-
+    type: Number,
+  },
 });
 
 const ydoc = new Y.Doc();
@@ -163,108 +108,37 @@ const createEditor = () => {
     ],
     content: props.content,
   });
-
-  // localStorage.setItem("currentUser", JSON.stringify(currentUser.value));
 };
 
-
-console.log(editor.value, "<<< editor");
-
 const getContent = () => {
-   const content = editor.value.getHTML();
-  //  console.log(content);
-   return content
- }
-
-const setContent = () => {
-  const content = this.editor.getHTML();
-  console.log(content);
- }
+  const content = editor.value.getHTML();
+  return content;
+};
 
 const updateCurrentUser = (attributes) => {
   currentUser.value = { ...currentUser.value, ...attributes };
   editor.chain().focus().updateUser(currentUser.value).run();
-  // localStorage.setItem("currentUser", JSON.stringify(currentUser.value));
 };
 
-
 const handleSave = () => {
-  const content = getContent()
-  console.log(content)
-  patchArticleById(props.id, content)
+  const content = getContent();
+  patchArticleById(props.id, content);
+};
 
+async function patchArticleById(id, content) {
+  try {
+    const patchBody = {
+      id: id,
+      content: content,
+    };
+    const { data } = await axios.patch(
+      `http://localhost:8000/documents/${id}`,
+      patchBody
+    );
+  } catch (err) {
+    console.log(err);
+  }
 }
-
- async function patchArticleById (id,content) {
-      try {
-        const patchBody = {
-          id: id,
-          content: content
-        };
-        const { data } = await axios.patch(
-          `http://localhost:8000/documents/${id}`,
-          patchBody
-        );
-        console.log(data, "in axios")
-  
-
-      } catch (err) {
-        console.log(err);
-      }
-    }
-
-const setName = () => {
-      const name = (window.prompt("Name") || "").trim().substring(0, 32);
-      if (name) {
-        updateCurrentUser({
-          name,
-        });
-      }
-    };
-
-
-    const getRandomColor = () => {
-      return getRandomElement([
-        "#958DF1",
-        "#F98181",
-        "#FBBC88",
-        "#FAF594",
-        "#70CFF8",
-        "#94FADB",
-        "#B9F18D",
-      ]);
-    };
-
-    const getRandomName = () => {
-      return getRandomElement([
-        "Lea Thompson",
-        "Cyndi Lauper",
-        "Tom Cruise",
-        "Madonna",
-        "Jerry Hall",
-        "Joan Collins",
-        "Winona Ryder",
-        "Christina Applegate",
-        "Alyssa Milano",
-        "Molly Ringwald",
-        "Ally Sheedy",
-        "Debbie Harry",
-        "Olivia Newton-John",
-        "Elton John",
-        "Michael J. Fox",
-        "Axl Rose",
-        "Emilio Estevez",
-        "Ralph Macchio",
-        "Rob Lowe",
-        "Jennifer Grey",
-        "Mickey Rourke",
-        "John Cusack",
-        "Matthew Broderick",
-        "Justine Bateman",
-        "Lisa Bonet",
-      ]);
-    };
-
 
 const setName = () => {
   const name = (window.prompt("Name") || "").trim().substring(0, 32);
@@ -275,14 +149,10 @@ const setName = () => {
   }
 };
 
-
 onUnmounted(() => {
   editor.value.commands.setContent({ type: "doc", content: [] });
   editor.value.destroy();
-  // provider.destroy();
-
 });
-
 </script>
 <style lang="scss">
 .editor {
