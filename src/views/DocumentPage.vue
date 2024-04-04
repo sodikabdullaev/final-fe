@@ -1,10 +1,8 @@
 <template>
   <div class="relative md:flex h-screen overflow-hidden py-10 min-w-fit">
-
      <div class="wrapper">
-    <MyEditor v-if="state.document" :content="state.document.content" :title="state.document.title" :id="id"/>
+    <MyEditor v-if="state.document" :content="state.document.content" :title="state.document.title" :author="state.document.author" :id="state.document.id"/>
         <!-- <h2>{{ isNewDocument ? 'New Document' : 'Existing Document' }}</h2> -->
-
     
     <!-- <h3>{{ id || 'No id passed yet' }}</h3> -->
     <!-- <h4>{{ title || 'no title'}}</h4> -->
@@ -16,9 +14,7 @@
     </div> 
     </div> 
   
-
 </template>
-
 <script setup>
 import { onMounted, onUnmounted } from "vue";
 import { ref } from "vue";
@@ -33,10 +29,8 @@ import axios from 'axios';
 import { watch } from "vue";
 import { v4 as uuidv4 } from "uuid";
 
-
 store.isFormVisible = false
 // store.documentExists = true
-
 
 const route = useRoute()
 const router = useRouter()
@@ -46,19 +40,14 @@ const docId = route.params.id
 const isNewDocument = route.query.isNewDocument === 'true';
 const document = ref(null);
 
-
-
 const props = defineProps({
   id: {
     type: String,
     required: false
   },
-
 });
 
-
 store.isFormVisible = false
-
 
 
 const state = reactive({
@@ -84,9 +73,10 @@ const state = reactive({
     }
   },
 });
-
-
-
+// async function getAuthor() {
+//   await state.setDocument()
+//   console.log(state.document.author, "<<<author")
+// }
 
   onMounted(async () => {
   await state.setDocument();
@@ -95,6 +85,5 @@ const state = reactive({
       
       
     </script>
-
 
 

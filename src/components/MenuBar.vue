@@ -5,26 +5,24 @@
       <menu-item v-else :key="index" v-bind="item" />
       <!-- <addImage /> -->
       
+      
     </template>
   </div>
 </template>
-
 <script>
-import MenuItem from './MenuItem.vue'
+import MenuItem from './MenuItem.vue';
 // import addImage from './InsertImage.vue'
-
 export default {
   components: {
-    MenuItem,
+    MenuItem
   },
-
   props: {
     editor: {
       type: Object,
       required: true,
     },
+   
   },
-
   data() {
     return {
       items: [
@@ -45,22 +43,11 @@ export default {
           title: 'Strike',
           action: () => this.editor.chain().focus().toggleStrike().run(),
           isActive: () => this.editor.isActive('strike'),
-        },
-        {
-          icon: 'code-view',
-          title: 'Code',
-          action: () => this.editor.chain().focus().toggleCode().run(),
-          isActive: () => this.editor.isActive('code'),
-        },
-        {
-          icon: 'mark-pen-line',
-          title: 'Highlight',
-          action: () => this.editor.chain().focus().toggleHighlight().run(),
-          isActive: () => this.editor.isActive('highlight'),
-        },
+        }, 
         {
           type: 'divider',
         },
+        
         {
           icon: 'h-1',
           title: 'Heading 1',
@@ -74,33 +61,69 @@ export default {
           isActive: () => this.editor.isActive('heading', { level: 2 }),
         },
         {
+          type: 'divider',
+        },
+        {
           icon: 'paragraph',
           title: 'Paragraph',
           action: () => this.editor.chain().focus().setParagraph().run(),
           isActive: () => this.editor.isActive('paragraph'),
         },
         {
-          icon: 'list-unordered',
-          title: 'Bullet List',
-          action: () => this.editor.chain().focus().toggleBulletList().run(),
-          isActive: () => this.editor.isActive('bulletList'),
+          icon: 'align-left',
+          title: 'TextAlign',
+          action: () => this.editor.chain().focus().setTextAlign('left').run(),
+          isActive: () => this.editor.isActive({ textAlign: 'left' }),
         },
         {
-          icon: 'list-ordered',
-          title: 'Ordered List',
-          action: () => this.editor.chain().focus().toggleOrderedList().run(),
-          isActive: () => this.editor.isActive('orderedList'),
+          icon: 'align-center',
+          title: 'TextAlign',
+          action: () => this.editor.chain().focus().setTextAlign('center').run(),
+          isActive: () => this.editor.isActive({ textAlign: 'center' }),
         },
         {
-          icon: 'list-check-2',
-          title: 'Task List',
-          action: () => this.editor.chain().focus().toggleTaskList().run(),
-          isActive: () => this.editor.isActive('taskList'),
+          icon: 'align-right',
+          title: 'TextAlign',
+          action: () => this.editor.chain().focus().setTextAlign('right').run(),
+          isActive: () => this.editor.isActive({ textAlign: 'right' }),
         },
         {
-          icon: 'code-box-line',
-          title: 'Code Block',
-          action: () => this.editor.chain().focus().toggleCodeBlock().run(),
+          icon: 'align-justify',
+          title: 'TextAlign',
+          action: () => this.editor.chain().focus().setTextAlign('justify').run(),
+          isActive: () => this.editor.isActive({ textAlign: 'justify' }),
+        },
+  
+      
+      
+    {
+      icon: 'list-unordered',
+      title: 'Bullet List',
+      action: () => this.editor.chain().focus().toggleBulletList().run(),
+      isActive: () => this.editor.isActive('bulletList'),
+    },
+    {
+      icon: 'list-ordered',
+      title: 'Ordered List',
+      action: () => this.editor.chain().focus().toggleOrderedList().run(),
+      isActive: () => this.editor.isActive('orderedList'),
+    },
+    {
+      icon: 'list-check-2',
+      title: 'Task List',
+      action: () => this.editor.chain().focus().toggleTaskList().run(),
+      isActive: () => this.editor.isActive('taskList'),
+    },
+    {
+      icon: 'code-view',
+      title: 'Code',
+      action: () => this.editor.chain().focus().toggleCode().run(),
+      isActive: () => this.editor.isActive('code'),
+    },
+    {
+      icon: 'code-box-line',
+      title: 'Code Block',
+      action: () => this.editor.chain().focus().toggleCodeBlock().run(),
           isActive: () => this.editor.isActive('codeBlock'),
         },
         {
@@ -152,7 +175,6 @@ export default {
   },
 }
 </script>
-
 <style lang="scss">
 .divider {
   background-color: rgba(#fff, 0.25);
