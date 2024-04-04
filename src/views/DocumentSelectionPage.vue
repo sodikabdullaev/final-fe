@@ -132,7 +132,8 @@ import axios from "axios";
 
 const documents = ref([]);
 const router = useRouter();
-const avatar = JSON.parse(localStorage.getItem("currentUser")).avatar_url;
+const avatar =
+  "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png";
 
 onMounted(async () => {
   try {
