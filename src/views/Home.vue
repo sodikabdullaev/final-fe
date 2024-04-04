@@ -4,7 +4,7 @@
       <h1 class="text-3xl font-bold tracking-tight text-gray-900">Home Page</h1>
     </div>
   </div>
-  <div class="bg-white flex items-center justify-center h-screen">
+  <div class="bg-white flex flex-col items-center justify-start min-h-screen py-8 mt-40">
     <div class="container mx-1/2 mt-50">
       <div class="min-w-50 min-h-fit grid justify-items-stretch">
         <button

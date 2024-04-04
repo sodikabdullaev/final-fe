@@ -60,12 +60,6 @@
                 >
                   Created
                 </th>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase"
-                >
-                  Action
-                </th>
               </tr>
             </thead>
             <tbody>
@@ -100,36 +94,18 @@
                 <td
                   class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200"
                 >
-                  <img
-                    class="inline-block h-8 w-8 rounded-full ring-2 ring-white"
-                    src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt=""
-                  />
-                  <img
-                    class="inline-block h-8 w-8 rounded-full ring-2 ring-white"
-                    src="https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt=""
-                  />
-                  <img
-                    class="inline-block h-8 w-8 rounded-full ring-2 ring-white"
-                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.25&w=256&h=256&q=80"
-                    alt=""
-                  />
+                   <template v-for="collaboration in document.collaborations">
+        <img
+          class="inline-block h-8 w-8 rounded-full ring-2 ring-white"
+          :src="collaboration.avatar_url"
+          :alt="collaboration.name"
+        />
+      </template>
                 </td>
                 <td
                   class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200"
                 >
                   {{ timeAgo(new Date(document.created_at)) }}
-                </td>
-                <td
-                  class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium"
-                >
-                  <button
-                    type="button"
-                    class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-blue-600 hover:text-blue-800 disabled:opacity-50 disabled:pointer-events-none dark:text-blue-500 dark:hover:text-blue-400 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
-                  >
-                    Edit
-                  </button>
                 </td>
               </tr>
             </tbody>
@@ -160,7 +136,19 @@ onMounted(async () => {
       throw new Error("Failed to fetch documents");
     }
     const data = await response.json();
-    documents.value = data;
+    documents.value = data.map(document => ({
+      ...document,
+      collaborations: [],
+    }));
+
+    await Promise.all(
+        documents.value.map(async document => {
+          const collaboratorsResponse = await axios.get(`http://127.0.0.1:8000/documents/${document.id}/collaborations`);
+          if (collaboratorsResponse.status === 200) {
+            document.collaborations = collaboratorsResponse.data;
+          }
+        })
+      );
   } catch (error) {
     console.error("Error fetching documents:", error.message);
   }
@@ -196,4 +184,6 @@ async function createNewDocument() {
     console.error("Error creating new document:", error.message);
   }
 }
+
+
 </script>
