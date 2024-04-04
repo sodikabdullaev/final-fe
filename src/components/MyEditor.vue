@@ -25,6 +25,7 @@
       
     </button>
     </bubble-menu>
+    </div>
     <editor-content class="editor__content" :editor="editor" />
     <div class="editor__footer">
       <div :class="`editor__status editor__status--${status}`">
@@ -44,7 +45,7 @@
       </div>
     </div>
   </div>
-  </div>
+
 </template>
 
 <script setup>
