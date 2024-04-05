@@ -1,7 +1,34 @@
-# Vue 3 + Vite
+# Co-Create
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+This repository contains the front end code for the final project
 
-## Recommended IDE Setup
+Co-Create is a real time live editor which allows users to collaborate on documents, save their documents to their account, invite collaborators and leave comments with edit suggestions. 
 
-- [VS Code](https://code.visualstudio.com/) + [Vue - Official](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (previously Volar) and disable Vetur
+## Setup Instructions
+
+Follow these steps to run the project locally:
+
+1. Clone the repository:
+
+ ```
+ git clone https://github.com/sodikabdullaev/final-fe
+ cd final-fe
+```
+
+2. Install dependancies:
+```
+npm install
+```
+
+3. Run the server:
+
+```
+node server.js
+```
+
+4. Run the app:
+Open a new terminal:
+
+```
+npm run dev
+```
